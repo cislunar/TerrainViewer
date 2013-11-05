@@ -79,7 +79,7 @@ void DrawImgRot( GLuint sourceTexture, Color& color, float xPos, float yPos, flo
 	glEnd();
 }
 
-void DrawLine( Vec2& start, Vec2& end, Color& color )
+void DrawLine( glm::vec2& start, glm::vec2& end, Color& color )
 {
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(color.r, color.g, color.b);
