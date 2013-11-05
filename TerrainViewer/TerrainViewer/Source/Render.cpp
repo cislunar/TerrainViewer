@@ -1,9 +1,20 @@
-
 #include "Main.h"
 #include "Math.h"
 #include "Render.h"
+#include <assert.h>
 
-void init_GL()
+Render Render::singleton;
+
+Render::Render()
+{
+}
+
+Render::~Render()
+{
+	//CleanUpDrawLine();
+}
+
+void Render::init_GL()
 {
 	// Set the OpenGL state after creating the context with SDL_SetVideoMode
 	glClearColor( 0, 0, 0, 0 );
@@ -14,6 +25,20 @@ void init_GL()
 	glOrtho( 0, SCREEN_W, SCREEN_H, 0, -1, 1 );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
+
+	GLenum err = glewInit();
+	fprintf(stderr, "Glew Error: %s\n", glewGetErrorString(err));
+	if (err != GLEW_OK)
+		exit(1); // or handle the error in a nicer way
+	if(GLEW_VERSION_2_0)
+	{
+		printf("GLEW_VERSION_2_0 is supported\n");
+	}
+	else
+	{
+		printf("GLEW_VERSION_2_0 is not supported\n");
+
+	}
 }
 
 void DrawImage( GLuint sourceTexture, Color& color, float xPos, float yPos, float width, float height )
@@ -25,8 +50,9 @@ void DrawImage( GLuint sourceTexture, Color& color, float xPos, float yPos, floa
 	glColor3f(color.r, color.g, color.b);
 	glEnable( GL_TEXTURE_2D );
 	glBindTexture( GL_TEXTURE_2D, sourceTexture );
-	glAlphaFunc ( GL_GREATER, 0.99f );
-	glEnable ( GL_ALPHA_TEST ) ;
+	glDisable ( GL_ALPHA_TEST ) ;
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glEnable ( GL_BLEND ) ;
 	glBegin( GL_QUADS );
 	// Top-left vertex (corner)
 	glTexCoord2i( 0, 0 );
@@ -61,8 +87,9 @@ void DrawImgRot( GLuint sourceTexture, Color& color, float xPos, float yPos, flo
 	glEnable( GL_TEXTURE_2D );
 	// Bind the texture to which subsequent calls refer to
 	glBindTexture( GL_TEXTURE_2D, sourceTexture );
-	glAlphaFunc ( GL_GREATER, 0.99f );
-	glEnable ( GL_ALPHA_TEST ) ;
+	glDisable ( GL_ALPHA_TEST ) ;
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glEnable ( GL_BLEND ) ;
 	glBegin( GL_QUADS );
 	// Top-left vertex (corner)
 	glTexCoord2i( 0, 0 );
@@ -153,4 +180,43 @@ GLuint LoadImage( char* filename )
 		SDL_FreeSurface( surface );
 	}
 	return texture;
+}
+
+void GLQueryCompileStatus(GLuint shader, GLenum type)
+{
+	GLint success;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		GLchar InfoLog[1024];
+		glGetShaderInfoLog(shader, sizeof(InfoLog), NULL, InfoLog);
+		fprintf(stderr, "Error compiling shader type %d: '%s'\n", type, InfoLog);
+		assert(false);
+	}
+}
+
+void GLQueryLinkStatus(GLuint prog)
+{
+	GLint success;
+	glGetProgramiv(prog, GL_LINK_STATUS, &success);
+	if (success == 0) {
+		GLchar ErrorLog[1024];
+		glGetProgramInfoLog(prog, sizeof(ErrorLog), NULL, ErrorLog);
+		fprintf(stderr, "Error linking shader program: '%s'\n", ErrorLog);
+		assert(false);
+	}
+}
+
+
+void GLQueryValidation(GLuint prog)
+{
+	GLint success;
+	// Validate that all shaders play well together
+
+	glGetProgramiv(prog, GL_VALIDATE_STATUS, &success);
+	if (success == 0) {
+		GLchar ErrorLog[1024];
+		glGetProgramInfoLog(prog, sizeof(ErrorLog), NULL, ErrorLog);
+		fprintf(stderr, "Error validating shader program: '%s'\n", ErrorLog);
+		assert(false);
+	}
 }

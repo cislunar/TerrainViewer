@@ -2,13 +2,8 @@
 // Common includes
 #include <assert.h>
 
-#if 1
-#define SCREEN_W 800
-#define SCREEN_H 600
-#else
-#define SCREEN_W 1024
-#define SCREEN_H 768
-#endif
+#ifndef _CONTROLS_H_
+#define _CONTROLS_H_
 
 #define SPRITE_DIAM 10
 #define SPRITE_RADIUS (SPRITE_DIAM/2)
@@ -20,3 +15,4 @@
 TwBar *TwkBar();
 #endif // TWEAK_MENU
 
+#endif

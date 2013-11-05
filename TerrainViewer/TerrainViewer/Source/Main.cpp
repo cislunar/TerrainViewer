@@ -1,9 +1,9 @@
+#include "Render.h"
 #include "SDL.h"
 #include "SDL_image.h"
-#include "SDL_opengl.h"
+
 #include "Main.h"
 #include "Simulation.h"
-#include "Render.h"
 
 #include <stdio.h> 
 
@@ -42,8 +42,7 @@ int init()
 		return 1;
 	}
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-//	screen = SDL_SetVideoMode( 640, 480, 16, SDL_OPENGL|SDL_FULLSCREEN );
-	screen = SDL_SetVideoMode( SCREEN_W, SCREEN_H, 32, SDL_OPENGL );
+	screen = SDL_SetVideoMode( SCREEN_W, SCREEN_H, 0, SDL_OPENGL | SDL_OPENGL);//SDL_FULLSCREEN );	
 	if ( !screen ) {
 		printf("Unable to set video mode: %s\n", SDL_GetError());
 		return 1;
@@ -66,7 +65,8 @@ int main(int argc, char *argv[])
 	bool step = false;
 	bool quit = false;
 	init();
-	init_GL();
+	Render *pRender = Render::GetInstance();
+	pRender->init_GL();
 
 #if TWEAK_MENU
 	TwInit(TW_OPENGL, NULL);
