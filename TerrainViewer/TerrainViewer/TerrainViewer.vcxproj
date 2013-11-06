@@ -80,12 +80,17 @@
   <ItemGroup>
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Render.cpp" />
+    <ClCompile Include="Source\RenderObj.cpp" />
+    <ClCompile Include="Source\RenderObjTest.cpp" />
     <ClCompile Include="Source\Simulation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h" />
     <ClInclude Include="Source\Math.h" />
     <ClInclude Include="Source\Render.h" />
+    <ClInclude Include="Source\RenderObj.h" />
+    <ClInclude Include="Source\RenderObjBase.h" />
+    <ClInclude Include="Source\RenderObjTest.h" />
     <ClInclude Include="Source\Simulation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

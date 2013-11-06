@@ -22,6 +22,17 @@ struct Color
 	float r, g, b;
 };
 
+struct ShaderInfo
+{
+	GLuint
+		VertexShaderId,
+		FragmentShaderId,
+		ProgramId,
+		VaoId,
+		VboId,
+		IndexBufferId;
+};
+
 void	DrawImage( GLuint sourceTexture, Color& color, float xPos, float yPos, float width, float height );
 void	DrawImgRot( GLuint sourceTexture, Color& color, float xPos, float yPos, float width, float height, float rot );
 void	DrawLine( glm::vec2& start, glm::vec2& end, Color& color );

@@ -22,7 +22,8 @@ public:
 private:
 	Simulation();							// Force use of singleton
 
-	static	Simulation	singleton;
-	static  const	int			MAX_SPRITES = 2;
-			GLuint		sprites[MAX_SPRITES];
+	static Simulation	singleton;
+	static const int	MAX_SPRITES = 2;
+	GLuint				sprites[MAX_SPRITES];
+	glm::vec2			m_terrainRes;
 };
