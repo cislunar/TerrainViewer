@@ -17,6 +17,7 @@ void RenderObjTest::Render()
 
 void RenderObjTest::BindForRender()
 {
+	glUseProgram(m_renderInfo.ProgramId);
 	glBindVertexArray(m_renderInfo.VaoId);
 	glBindBuffer(GL_ARRAY_BUFFER, m_renderInfo.VboId);
 	glEnableVertexAttribArray(0);
@@ -32,6 +33,7 @@ void RenderObjTest::UnbindForRender()
 	glDisableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glUseProgram(0);
 }
 
 
@@ -90,7 +92,7 @@ void RenderObjTest::CreateVBO(void)
 	GLenum ErrorCheckValue = glGetError();
 	const size_t BufferSize = sizeof(Vertices);
 	const size_t VertexSize = sizeof(Vertices[0]);
-	const size_t RgbOffset = sizeof(Vertices[0].XYZW);
+	const size_t RgbOffset = sizeof(Vertices[0].Position);
 
 	// Generates array that describes how the vertex attributes are stored in VBO
 	glGenVertexArrays(1, &m_renderInfo.VaoId);

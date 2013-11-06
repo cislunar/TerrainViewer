@@ -8,6 +8,9 @@
 #include "Math.h"
 #include "GL\glut.h"
 
+#define printOpenGLError() printOglError(__FILE__, __LINE__)
+int printOglError(char *file, int line);
+
 #if 0
 #define SCREEN_W 800
 #define SCREEN_H 600
@@ -15,6 +18,7 @@
 #define SCREEN_W 1024
 #define SCREEN_H 768
 #endif
+
 
 struct Color
 {
@@ -33,6 +37,12 @@ struct ShaderInfo
 		IndexBufferId;
 };
 
+struct ShaderFiles
+{
+	char* vertFile;
+	char* fragFile;
+};
+
 void	DrawImage( GLuint sourceTexture, Color& color, float xPos, float yPos, float width, float height );
 void	DrawImgRot( GLuint sourceTexture, Color& color, float xPos, float yPos, float width, float height, float rot );
 void	DrawLine( glm::vec2& start, glm::vec2& end, Color& color );
@@ -40,6 +50,8 @@ GLuint	LoadImage( char* filename );
 void	GLQueryCompileStatus(GLuint shader, GLenum type);
 void	GLQueryLinkStatus(GLuint prog);
 void	GLQueryValidation(GLuint prog);
+void	LoadShader(ShaderInfo* _shader, ShaderFiles sFiles);
+
 
 class Render
 {

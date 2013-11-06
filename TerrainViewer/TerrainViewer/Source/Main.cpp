@@ -22,7 +22,7 @@ float x=100,y=100;
 void StartFrame()
 {
 	// Clear the screen before drawing
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //	glTranslatef(SCREEN_W/2,SCREEN_HEIGHT/2,0.0);	// Moves world origin to center of window
 //	glRotatef( spin, 0.0, 0.0, 1.0 );				// Rotate camera
 }

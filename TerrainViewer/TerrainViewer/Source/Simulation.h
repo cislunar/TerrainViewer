@@ -17,6 +17,8 @@ public:
 	void SimulateOneFrame(float deltaTime);	// A single logic step
 	void DrawFrame();						// Draw all the sprites
 	void RotationWrap();					// Wrap rotation of sprites
+	glm::mat4 GetViewMat();
+	glm::mat4 GetProjMat();
 
 
 private:

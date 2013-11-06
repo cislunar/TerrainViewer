@@ -1,5 +1,6 @@
 #include "Main.h"
 #include "Render.h"
+#include "filereader.h"
 #include <assert.h>
 
 Render Render::singleton;
@@ -14,8 +15,6 @@ Render::~Render()
 {
 	//CleanUpDrawLine();
 }
-
-
 
 void Render::init_GL()
 {
@@ -184,6 +183,61 @@ GLuint LoadImage( char* filename )
 	return texture;
 }
 
+void LoadShader(ShaderInfo* _shader, ShaderFiles sFiles)
+{
+	char *vs = NULL,*fs = NULL;
+
+	GLuint vert	= 0;
+	vert =	glCreateShader(GL_VERTEX_SHADER);
+	GLuint frag	= glCreateShader(GL_FRAGMENT_SHADER);
+
+	// Read in the shader files
+	vs = textFileRead(sFiles.vertFile);
+	fs = textFileRead(sFiles.fragFile);
+
+	const char * vv = vs;
+	const char * ff = fs;
+
+	// Grab source files for vert and frag shaders
+	glShaderSource(vert, 1, &vv,NULL);
+	glShaderSource(frag, 1, &ff,NULL);
+
+	free((char*)vv);
+	free((char*)ff);
+
+	// Compile Shaders--------------------------------------------------------
+	// Compile vertex shader, then test if it was successful
+	glCompileShader(vert);
+	GLQueryCompileStatus(vert, GL_VERTEX_SHADER);
+
+	// Compile fragment shader, then test if it was successful
+	glCompileShader(frag);
+	GLQueryCompileStatus(frag, GL_FRAGMENT_SHADER);
+
+	// Create shader programs-------------------------------------------------------
+	// Create shader program to become an anchor point of shaders to link to.
+	// Multiple shaders of each type can be attached here, but only one file per type (vert and frag)
+	// can have a main() function
+	GLuint prog = glCreateProgram();
+	glAttachShader(prog,frag);
+	glAttachShader(prog,vert);
+
+	// Link Programs-----------------------------------------------------------------
+	// Link program into openGL, then test to see if there were any errors
+	glLinkProgram(prog);
+	GLQueryLinkStatus(prog);
+
+	// Validate shaders---------------------------------------------------------------
+	// Validate that all shaders play well together, see if there are errors
+	glValidateProgram(prog);
+	GLQueryValidation(prog);
+
+	// Assign values
+	_shader->VertexShaderId = vert;
+	_shader->FragmentShaderId = frag;
+	_shader->ProgramId = prog;
+}
+
 void GLQueryCompileStatus(GLuint shader, GLenum type)
 {
 	GLint success;
@@ -221,4 +275,22 @@ void GLQueryValidation(GLuint prog)
 		fprintf(stderr, "Error validating shader program: '%s'\n", ErrorLog);
 		assert(false);
 	}
+}
+
+int printOglError(char *file, int line)
+{
+	//
+	// Returns 1 if an OpenGL error occurred, 0 otherwise.
+	//
+	GLenum glErr;
+	int    retCode = 0;
+
+	glErr = glGetError();
+	while (glErr != GL_NO_ERROR)
+	{
+		printf("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
+		retCode = 1;
+		glErr = glGetError();
+	}
+	return retCode;
 }

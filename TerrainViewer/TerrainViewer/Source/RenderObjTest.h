@@ -39,7 +39,8 @@ protected:
 	void CreateShaders(void);
 	void DestroyVBO(void);
 	void DestroyShaders(void);
-private:
 	void BindForRender();
 	void UnbindForRender();
+private:
+	
 };

@@ -12,6 +12,5 @@ protected:
 	virtual void DestroyVBO(void);
 	virtual void DestroyShaders(void);
 
-	ShaderInfo m_renderInfo;
 private:
 };

@@ -30,6 +30,12 @@
     <ClCompile Include="Source\RenderObjTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Obj3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\filereader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -53,5 +59,19 @@
     <ClInclude Include="Source\RenderObjTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Obj3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\filereader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\CubeVert.txt">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Source\CubeFrag.txt">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
