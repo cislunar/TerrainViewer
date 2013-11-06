@@ -6,6 +6,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "Math.h"
+#include "GL\glut.h"
 
 #if 0
 #define SCREEN_W 800
