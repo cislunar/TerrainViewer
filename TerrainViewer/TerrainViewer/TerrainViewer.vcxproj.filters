@@ -36,6 +36,9 @@
     <ClCompile Include="Source\filereader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Main.h">
@@ -65,12 +68,21 @@
     <ClInclude Include="Source\filereader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Terrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\CubeVert.txt">
       <Filter>Source Files</Filter>
     </None>
     <None Include="Source\CubeFrag.txt">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Source\TerrainVert.txt">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Source\TerrainFrag.txt">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

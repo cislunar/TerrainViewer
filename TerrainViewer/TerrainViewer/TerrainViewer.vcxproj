@@ -85,6 +85,7 @@
     <ClCompile Include="Source\RenderObj.cpp" />
     <ClCompile Include="Source\RenderObjTest.cpp" />
     <ClCompile Include="Source\Simulation.cpp" />
+    <ClCompile Include="Source\Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\filereader.h" />
@@ -96,10 +97,13 @@
     <ClInclude Include="Source\RenderObjBase.h" />
     <ClInclude Include="Source\RenderObjTest.h" />
     <ClInclude Include="Source\Simulation.h" />
+    <ClInclude Include="Source\Terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\CubeFrag.txt" />
     <None Include="Source\CubeVert.txt" />
+    <None Include="Source\TerrainFrag.txt" />
+    <None Include="Source\TerrainVert.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
