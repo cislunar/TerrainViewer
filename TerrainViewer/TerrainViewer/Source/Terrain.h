@@ -32,11 +32,15 @@ public:
 		if(m_indices != NULL)
 		{
 			free(m_indices);
+			*m_indices = NULL;
+			m_indices = NULL;
 		}
 
 		if(m_vertices != NULL)
 		{
 			free(m_vertices);
+			m_vertices = NULL;
+			m_vertices = NULL;
 		}
 	}
 	virtual void Render(void);
