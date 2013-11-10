@@ -85,6 +85,7 @@
     <None Include="Source\TerrainFrag.txt">
       <Filter>Source Files</Filter>
     </None>
+<<<<<<< HEAD
     <None Include="SDL-1.2.14\lib\SDL.dll">
       <Filter>Resource Files</Filter>
     </None>
@@ -138,5 +139,7 @@
     <Library Include="AntTweakBar\lib\AntTweakBar64.lib">
       <Filter>Resource Files</Filter>
     </Library>
+=======
+>>>>>>> a44a87dda496a1b9a36616f84b14d3293ada5939
   </ItemGroup>
 </Project>
