@@ -100,32 +100,10 @@
     <ClInclude Include="Source\Terrain.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AntTweakBar\lib\AntTweakBar.dll" />
-    <None Include="AntTweakBar\lib\AntTweakBar64.dll" />
-    <None Include="GLEW\lib\GlewGlutDLLs\glew32.dll" />
-    <None Include="GLEW\lib\GlewGlutDLLs\glut32.dll" />
-    <None Include="SDL-1.2.14\lib\SDL.dll" />
-    <None Include="SDL_image-1.2.10\lib\jpeg.dll" />
-    <None Include="SDL_image-1.2.10\lib\libpng12-0.dll" />
-    <None Include="SDL_image-1.2.10\lib\libtiff-3.dll" />
-    <None Include="SDL_image-1.2.10\lib\SDL_image.dll" />
-    <None Include="SDL_image-1.2.10\lib\zlib1.dll" />
     <None Include="Source\CubeFrag.txt" />
     <None Include="Source\CubeVert.txt" />
     <None Include="Source\TerrainFrag.txt" />
     <None Include="Source\TerrainVert.txt" />
-<<<<<<< HEAD
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="AntTweakBar\lib\AntTweakBar.lib" />
-    <Library Include="AntTweakBar\lib\AntTweakBar64.lib" />
-    <Library Include="GLEW\lib\glew32.lib" />
-    <Library Include="GLEW\lib\glut32.lib" />
-    <Library Include="SDL-1.2.14\lib\SDL.lib" />
-    <Library Include="SDL-1.2.14\lib\SDLmain.lib" />
-    <Library Include="SDL_image-1.2.10\lib\SDL_image.lib" />
-=======
->>>>>>> a44a87dda496a1b9a36616f84b14d3293ada5939
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
