@@ -171,6 +171,7 @@ GLuint LoadImage( char* filename )
 	{
 		char temp[256];
 		sprintf_s( temp, "SDL could not load image: %s\n", SDL_GetError() );
+		printf("IMG_Load: %s\n", IMG_GetError());
 		OutputDebugStringA(temp);
 		SDL_Quit();
 		return 0;

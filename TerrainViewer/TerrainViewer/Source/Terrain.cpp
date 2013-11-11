@@ -1,6 +1,13 @@
 #include "Terrain.h"
 #include "Simulation.h"
 
+void Terrain::Setup()
+{
+	RenderObjBase::Setup();
+	m_testTex = LoadImage("Source\\TexTest.png");
+	printOpenGLError();
+}
+
 void Terrain::CreateVBO()
 {
 

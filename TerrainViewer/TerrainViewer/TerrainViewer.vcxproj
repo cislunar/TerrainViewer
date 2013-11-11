@@ -104,6 +104,7 @@
     <None Include="Source\CubeVert.txt" />
     <None Include="Source\TerrainFrag.txt" />
     <None Include="Source\TerrainVert.txt" />
+    <None Include="Source\TexTest.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

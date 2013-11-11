@@ -43,6 +43,7 @@ public:
 	}
 	virtual void Render(void);
 	virtual glm::mat4 GetModelMat();
+	void Setup();
 
 protected:
 	virtual void CreateVBO(void);
@@ -61,6 +62,7 @@ private:
 	glm::uvec2 m_faceResolution;
 	glm::uvec2 m_vertResolution;
 	glm::vec4 m_position;
+	GLuint m_testTex;
 	float m_scale;
 	GLuint
 		ProjectionMatrixUniformLocation,

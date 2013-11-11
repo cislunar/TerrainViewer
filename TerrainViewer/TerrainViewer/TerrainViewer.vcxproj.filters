@@ -71,6 +71,9 @@
     <None Include="Source\TerrainVert.txt">
       <Filter>Source</Filter>
     </None>
+    <None Include="Source\TexTest.png">
+      <Filter>Source</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">
