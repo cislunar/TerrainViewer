@@ -24,6 +24,14 @@ public:
 		{
 			fprintf(stderr, "out of memory\n");
 		}
+		memset(m_indices, 0, sizeof(GLuint) * IndicesCount());
+
+		m_texCoords = (glm::vec2*)malloc(sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x);
+		if(m_texCoords == NULL)
+		{
+			fprintf(stderr, "out of memory\n");
+		}
+		memset(m_texCoords, 0, sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x);
 		Init();
 	}
 
@@ -40,10 +48,17 @@ public:
 			free(m_vertices);
 			m_vertices = NULL;
 		}
+
+		if(m_texCoords != NULL)
+		{
+			free(m_texCoords);
+			m_texCoords = NULL;
+		}
 	}
 	virtual void Render(void);
 	virtual glm::mat4 GetModelMat();
 	void Setup();
+	void Cleanup();
 
 protected:
 	virtual void CreateVBO(void);
@@ -59,13 +74,16 @@ private:
 
 	glm::vec4* m_vertices;
 	GLuint* m_indices; 
+	glm::vec2* m_texCoords;
 	glm::uvec2 m_faceResolution;
 	glm::uvec2 m_vertResolution;
 	glm::vec4 m_position;
 	GLuint m_testTex;
+	GLuint m_txbo;
 	float m_scale;
 	GLuint
 		ProjectionMatrixUniformLocation,
 		ViewMatrixUniformLocation,
-		ModelMatrixUniformLocation;
+		ModelMatrixUniformLocation,
+		m_texLocation;
 };

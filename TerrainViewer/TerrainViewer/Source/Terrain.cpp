@@ -8,6 +8,12 @@ void Terrain::Setup()
 	printOpenGLError();
 }
 
+void Terrain::Cleanup()
+{
+	RenderObjBase::Cleanup();
+	glDeleteTextures(1, &m_testTex);
+}
+
 void Terrain::CreateVBO()
 {
 
@@ -35,11 +41,34 @@ void Terrain::CreateVBO()
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	printOpenGLError();
 
+	// Enables vertex shader attribute for use
+	glEnableVertexAttribArray(1);
+
+	// Create and bind texture buffer object
+	glGenBuffers(1, &m_txbo);
+
+	// Get texture uv location and upload
+	glBindBuffer(GL_ARRAY_BUFFER, m_txbo);
+	glBufferData(	GL_ARRAY_BUFFER, 
+					sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x, 
+					m_texCoords, 
+					GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
+
+
 	// Determines the draw order of the vertices we transferred to gpu
 	glGenBuffers(1, &m_renderInfo.IndexBufferId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_renderInfo.IndexBufferId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IndicesCount(), m_indices, GL_STATIC_DRAW);
 	printOpenGLError();
+
+	// Get texture location
+	m_texLocation = glGetUniformLocation(m_renderInfo.ProgramId, "heightMap");
+	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
+	glProgramUniform1i(m_renderInfo.ProgramId, m_texLocation , 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_testTex);	
 
 	// Detaches vertex array
 	glBindVertexArray(0);
@@ -82,6 +111,7 @@ void Terrain::DestroyShaders()
 void Terrain::DestroyVBO()
 {
 	UnbindForRender();
+	glDeleteBuffers(1, &m_txbo);
 	glDeleteBuffers(1, &m_renderInfo.IndexBufferId);
 	glDeleteBuffers(1, &m_renderInfo.VboId);
 	glDeleteVertexArrays(1, &m_renderInfo.VaoId);
@@ -107,7 +137,7 @@ void Terrain::Render()
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glFrontFace(GL_CW);
+	glFrontFace(GL_CCW);
 
 	BindForRender();
 	glDrawElements(GL_TRIANGLES, IndicesCount(), GL_UNSIGNED_INT, (GLvoid*)0);
@@ -155,9 +185,12 @@ void Terrain::UnbindForRender()
 void Terrain::Init()
 {
 	// Here, we evenly distribute the vertices of the terrain
-	// based on the face counts
+	// based on the face counts.
+	// We're also going to set the texCoords.
 	float xPos = -.5f;
 	float zPos = .5f;
+	float texXPos = 0.f;
+	float texYPos = 0.f;
 	float xStart = -.5f;
 	float wInc = 1.f/m_faceResolution.x;
 	float dInc = 1.f/m_faceResolution.y;
@@ -169,11 +202,20 @@ void Terrain::Init()
 			idx = i * m_vertResolution.x + j;
 			m_vertices[idx] = glm::vec4(xPos, 0.f, zPos, 1.f);
 			xPos+=wInc;
+
+			m_texCoords[idx] = glm::vec2(texXPos, texYPos);
+			texXPos += wInc;
 		}
 		xPos = xStart;
+		texXPos = 0.f;
+
 		zPos-=dInc;
+		texYPos+=dInc;
 	}
 
+
+	// Here we provided the indices of the vertices we're going to use to draw the tris
+	// and in what order.
 	int v1 = 0;
 	int v2 = 0;
 	int v3 = 0;
@@ -196,12 +238,13 @@ void Terrain::Init()
 
 			// We now add the indices that represent a triangle in CCW fashion,
 			// 2 triangles per face
+			//TODO Change the order to be CW because
 			m_indices[idxCnt++] = v1;
-			m_indices[idxCnt++] = v2;
-			m_indices[idxCnt++] = v3;
-			m_indices[idxCnt++] = v3;
 			m_indices[idxCnt++] = v4;
-			m_indices[idxCnt++] = v1;
+			m_indices[idxCnt++] = v2;
+			m_indices[idxCnt++] = v4;
+			m_indices[idxCnt++] = v3;
+			m_indices[idxCnt++] = v2;
 		}
 	}
 }
