@@ -8,7 +8,7 @@ public:
 	Terrain() : RenderObjBase()
 	{
 		m_position = glm::vec4(0,0,0,1);
-		m_scale = 100.0f;
+		m_scale = 1000.0f;
 		m_faceResolution = glm::uvec2(1024,1024);
 		m_vertResolution = m_faceResolution + glm::uvec2(1,1);
 
@@ -79,6 +79,7 @@ private:
 	glm::uvec2 m_vertResolution;
 	glm::vec4 m_position;
 	GLuint m_testTex;
+	GLuint m_heightmap1;
 	GLuint m_txbo;
 	float m_scale;
 	GLuint

@@ -5,14 +5,21 @@ layout(location=0) in vec4 in_Position;
 layout(location=1) in vec2 vertexUV; 
 
 // Output data
-out vec2 UV;
+//out vec2 UV;
+out vec4 heightColor;
 
 uniform mat4 ModelMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ProjectionMatrix;
+
+uniform sampler2D heightMap;
  
+vec4 newPos;
 void main(void)
 {
-	UV = vertexUV;
-    gl_Position = (ProjectionMatrix * ViewMatrix * ModelMatrix) * in_Position;
+	//UV = vertexUV;
+	heightColor = texture( heightMap, vertexUV);
+	newPos = in_Position;
+	newPos.y = texture( heightMap, vertexUV ).r - .5;
+    gl_Position = (ProjectionMatrix * ViewMatrix * ModelMatrix) * newPos;
 }

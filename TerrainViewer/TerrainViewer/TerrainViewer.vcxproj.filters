@@ -74,6 +74,9 @@
     <None Include="Source\TexTest.png">
       <Filter>Source</Filter>
     </None>
+    <None Include="Source\HeightMap1.bmp">
+      <Filter>Source</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">

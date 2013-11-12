@@ -1,12 +1,11 @@
 #version 400
 
 out vec4 out_Color;
-in vec2 UV;
+// vec2 UV;
+in vec4 heightColor;
 
-uniform sampler2D heightMap;
 
 void main(void)
 {
-	//texture( heightMap, UV);
-    out_Color = vec4(UV.x, 0, UV.y, 1); //vec4(1,1,1,1);
+    out_Color = vec4(heightColor.r, heightColor.r, heightColor.r, 1);//heightColor;//vec4(1,1,1,1);
 }

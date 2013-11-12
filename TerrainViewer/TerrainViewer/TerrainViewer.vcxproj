@@ -102,6 +102,7 @@
   <ItemGroup>
     <None Include="Source\CubeFrag.txt" />
     <None Include="Source\CubeVert.txt" />
+    <None Include="Source\HeightMap1.bmp" />
     <None Include="Source\TerrainFrag.txt" />
     <None Include="Source\TerrainVert.txt" />
     <None Include="Source\TexTest.png" />

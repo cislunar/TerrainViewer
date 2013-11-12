@@ -4,14 +4,14 @@
 void Terrain::Setup()
 {
 	RenderObjBase::Setup();
-	m_testTex = LoadImage("Source\\TexTest.png");
+	m_testTex = LoadImage("Source\\HeightMap1.bmp");
 	printOpenGLError();
 }
 
 void Terrain::Cleanup()
 {
 	RenderObjBase::Cleanup();
-	glDeleteTextures(1, &m_testTex);
+	glDeleteTextures(1, &m_heightmap1);
 }
 
 void Terrain::CreateVBO()
@@ -68,7 +68,7 @@ void Terrain::CreateVBO()
 	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
 	glProgramUniform1i(m_renderInfo.ProgramId, m_texLocation , 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_testTex);	
+	glBindTexture(GL_TEXTURE_2D, m_heightmap1);	
 
 	// Detaches vertex array
 	glBindVertexArray(0);
