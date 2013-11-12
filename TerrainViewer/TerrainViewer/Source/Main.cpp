@@ -90,7 +90,6 @@ int main(int argc, char *argv[])
 			if( handled )
 				continue;
 #endif // TWEAK_MENU
-
 			switch( event.type )
 			{
 			case SDL_QUIT:

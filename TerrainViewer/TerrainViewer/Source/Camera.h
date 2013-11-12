@@ -19,6 +19,8 @@ private:
 	void UpdatePos( float _dt );
 	void UpdateRot( float _dt, glm::vec2 _mouseDelta  );
 
+	glm::vec3 m_forward;
+	glm::vec3 m_right;
 	glm::vec3 m_pos;
 	glm::vec3 m_rot;
 	float m_nearClipPlane;

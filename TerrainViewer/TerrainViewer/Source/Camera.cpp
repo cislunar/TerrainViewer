@@ -12,10 +12,13 @@ Camera::Camera()
 	m_FOV = 60.f;
 	m_moveSpeed = 100.f;
 	m_rotSpeed = 0.5f;
+	m_forward = glm::vec3(0,0,-1);
+	m_right = glm::vec3(1,0,0);
 }
 
 void Camera::Update( float _dt, glm::vec2 _mouseDelta )
 {
+	// Always update rotation before translation
 	UpdateRot( _dt, _mouseDelta );
 	UpdatePos(_dt);
 }
@@ -24,23 +27,24 @@ void Camera::UpdatePos( float _dt )
 {
 	static Simulation* _sim = Simulation::GetSimulation();
 	glm::vec3 moveDir = glm::vec3();
+	glm::vec3 camPlaneForward = glm::cross(glm::vec3(0,1,0), m_right);
 	// Global Z Axis
 	if( _sim->GetKey(SDLK_w) )
 	{
-		moveDir += glm::vec3(0,0,-1) * m_moveSpeed;
+		moveDir += m_moveSpeed * camPlaneForward;
 	}
 	if( _sim->GetKey(SDLK_s))
 	{
-		moveDir += glm::vec3(0,0,1) * m_moveSpeed;
+		moveDir += m_moveSpeed * (-camPlaneForward);
 	}
 	// Global X Axis
 	if( _sim->GetKey(SDLK_a))
 	{
-		moveDir += glm::vec3(-1,0,0) * m_moveSpeed;
+		moveDir += m_moveSpeed * (-m_right);
 	}
 	if( _sim->GetKey(SDLK_d))
 	{
-		moveDir += glm::vec3(1,0,0) * m_moveSpeed;
+		moveDir += m_moveSpeed * (m_right);
 	}
 	// Global Y Axis
 	if( _sim->GetKey(SDLK_q))
@@ -60,7 +64,26 @@ void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 	rotOffset.x = _mouseDelta.y * m_rotSpeed;
 	rotOffset.y = _mouseDelta.x * m_rotSpeed;
 
-	SetRot( m_rot + rotOffset );
+	glm::vec3 finalRot = m_rot + rotOffset;
+	finalRot.x = glm::clamp(finalRot.x, -50.f, 50.f);
+	finalRot.y = finalRot.y < 0 ? 
+					finalRot.y + 360 : finalRot.y >= 360 ? 
+						finalRot.y - 360 : finalRot.y;
+
+	SetRot( finalRot );
+
+	// Rotate orientation vectors
+	// Rotate forward
+	glm::vec3 newForward	= glm::rotateX( glm::vec3(0,0,-1), -m_rot.x );
+	newForward				= glm::normalize(newForward);
+	newForward				= glm::rotateY( newForward, m_rot.y );
+	newForward				= glm::normalize(newForward);
+	m_forward				= newForward;
+
+	// Rotate right
+	glm::vec3 newRight		= glm::rotateY( glm::vec3(1,0,0), -m_rot.y );
+	newRight				= glm::normalize(newRight);
+	m_right					= newRight;
 }
 
 void Camera::SetPos( glm::vec3 _pos)

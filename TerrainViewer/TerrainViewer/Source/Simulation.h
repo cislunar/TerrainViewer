@@ -19,8 +19,10 @@ public:
 	void RotationWrap();					// Wrap rotation of sprites
 	glm::mat4 GetViewMat();
 	glm::mat4 GetProjMat();
+	void UpdatePrevKeys( SDLKey _key, bool _State );
 	void UpdateKeys(SDLKey _key, bool _State );
 	bool GetKey( SDLKey _key );
+	bool GetOnKeyDown( SDLKey _key );
 
 private:
 	Simulation();							// Force use of singleton
@@ -29,4 +31,6 @@ private:
 	static const int	MAX_SPRITES = 2;
 	GLuint				sprites[MAX_SPRITES];
 	bool				m_KEYS[322]; // Number of SDLK_DOWN events
+	bool				m_prevKEYS[322]; // Number of SDLK_DOWN events
+
 };
