@@ -78,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\filereader.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Obj3D.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="Source\Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\filereader.h" />
     <ClInclude Include="Source\Main.h" />
     <ClInclude Include="Source\Math.h" />

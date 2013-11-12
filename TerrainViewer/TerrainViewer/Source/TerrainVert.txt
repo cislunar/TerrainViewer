@@ -20,6 +20,6 @@ void main(void)
 	//UV = vertexUV;
 	heightColor = texture( heightMap, vertexUV);
 	newPos = in_Position;
-	newPos.y = texture( heightMap, vertexUV ).r - .5;
+	newPos.y = (texture( heightMap, vertexUV ).r / 3.5) - .5;
     gl_Position = (ProjectionMatrix * ViewMatrix * ModelMatrix) * newPos;
 }

@@ -9,7 +9,7 @@ public:
 	{
 		m_position = glm::vec4(0,0,0,1);
 		m_scale = 1000.0f;
-		m_faceResolution = glm::uvec2(1024,1024);
+		m_faceResolution = glm::uvec2(256,256);
 		m_vertResolution = m_faceResolution + glm::uvec2(1,1);
 
 		m_vertices = (glm::vec4*)malloc(sizeof(glm::vec4) * m_vertResolution.y * m_vertResolution.x);
