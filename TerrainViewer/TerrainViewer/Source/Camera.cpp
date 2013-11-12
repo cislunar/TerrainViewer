@@ -92,8 +92,8 @@ glm::mat4 Camera::GetViewMat()
 	// Returns an identity matrix that has been pushed backwards
 	// This mat keeps track of the camera position, rotation, and scale
 	glm::mat4 retval = glm::mat4(1.0f);
-	retval = glm::rotate(retval, m_rot.y, glm::vec3(0,1,0));
 	retval = glm::rotate(retval, m_rot.x, glm::vec3(1,0,0));
+	retval = glm::rotate(retval, m_rot.y, glm::vec3(0,1,0));
 	retval = glm::translate( retval, -m_pos );
 	return retval;
 }
