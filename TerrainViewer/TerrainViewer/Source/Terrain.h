@@ -8,7 +8,8 @@ public:
 	Terrain() : RenderObjBase()
 	{
 		m_position = glm::vec4(0,0,0,1);
-		m_scale = 1000.0f;
+		m_modelScale = glm::vec3(20, 2, 20);
+		m_scaler =  glm::vec2( 10000.f, 5000.f);
 		m_faceResolution = glm::uvec2(256,256);
 		m_vertResolution = m_faceResolution + glm::uvec2(1,1);
 
@@ -59,6 +60,7 @@ public:
 	virtual glm::mat4 GetModelMat();
 	void Setup();
 	void Cleanup();
+	glm::vec2* GetScale() {return &m_scaler;}
 
 protected:
 	virtual void CreateVBO(void);
@@ -81,7 +83,8 @@ private:
 	GLuint m_testTex;
 	GLuint m_heightmap1;
 	GLuint m_txbo;
-	float m_scale;
+	glm::vec3 m_modelScale;
+	glm::vec2 m_scaler;
 	GLuint
 		ProjectionMatrixUniformLocation,
 		ViewMatrixUniformLocation,

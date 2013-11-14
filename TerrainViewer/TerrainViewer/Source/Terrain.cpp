@@ -152,7 +152,8 @@ glm::mat4 Terrain::GetModelMat()
 {
 	// Identity matrix times scale of this object
 	glm::mat4 retval = glm::mat4(1.0f);
-	return 	glm::scale(retval, glm::vec3(m_scale,m_scale,m_scale) );
+	glm::vec3 scaler = (m_scaler.x * glm::vec3(m_modelScale.x, 0, m_modelScale.z)) + (m_scaler.y * glm::vec3(0, m_modelScale.y, 0));
+	return 	glm::scale(retval, scaler);
 }
 
 
