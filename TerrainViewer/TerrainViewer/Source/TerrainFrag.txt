@@ -9,6 +9,6 @@ float ambientItensity = .5;
 
 void main(void)
 {
-    //out_Color = vec4(heightColor.r, heightColor.r, heightColor.r, 1);//heightColor;//vec4(1,1,1,1);
-	out_Color = vec4(1,1,1,1) * (ambientLightColor * ambientItensity);
+    out_Color = vec4(heightColor.r, heightColor.r, heightColor.r, 1);//heightColor;//vec4(1,1,1,1);
+	//out_Color = vec4(1,1,1,1) * (ambientLightColor * ambientItensity);
 }

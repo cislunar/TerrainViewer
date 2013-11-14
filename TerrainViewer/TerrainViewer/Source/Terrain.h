@@ -9,7 +9,7 @@ public:
 	{
 		m_position = glm::vec4(0,0,0,1);
 		m_modelScale = glm::vec3(20, 2, 20);
-		m_scaler =  glm::vec2( 10000.f, 5000.f);
+		m_scaler =  glm::vec2( 10000.f, 10000.f);
 		m_faceResolution = glm::uvec2(256,256);
 		m_vertResolution = m_faceResolution + glm::uvec2(1,1);
 
@@ -33,6 +33,14 @@ public:
 			fprintf(stderr, "out of memory\n");
 		}
 		memset(m_texCoords, 0, sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x);
+
+		m_vertNormals = (glm::vec3*)malloc(sizeof(glm::vec3) * m_vertResolution.y * m_vertResolution.x);
+		if(m_vertNormals == NULL)
+		{
+			fprintf(stderr, "out of memory\n");
+		}
+		memset(m_vertNormals, 0, sizeof(glm::vec3) * m_vertResolution.y * m_vertResolution.x);
+
 		Init();
 	}
 
@@ -55,6 +63,12 @@ public:
 			free(m_texCoords);
 			m_texCoords = NULL;
 		}
+
+		if(m_vertNormals != NULL)
+		{
+			free(m_vertNormals);
+			m_vertNormals = NULL;
+		}
 	}
 	virtual void Render(void);
 	virtual glm::mat4 GetModelMat();
@@ -73,10 +87,13 @@ protected:
 	int IndicesCount();
 private:
 	void Init();
+	void InitTriVertices();
+	void InitTriIndices();
 
 	glm::vec4* m_vertices;
 	GLuint* m_indices; 
 	glm::vec2* m_texCoords;
+	glm::vec3* m_vertNormals;
 	glm::uvec2 m_faceResolution;
 	glm::uvec2 m_vertResolution;
 	glm::vec4 m_position;

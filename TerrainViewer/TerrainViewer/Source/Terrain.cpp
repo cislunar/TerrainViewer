@@ -183,8 +183,9 @@ void Terrain::UnbindForRender()
 	glUseProgram(0);
 }
 
-void Terrain::Init()
+void Terrain::InitTriVertices()
 {
+	//###########################################################
 	// Here, we evenly distribute the vertices of the terrain
 	// based on the face counts.
 	// We're also going to set the texCoords.
@@ -215,6 +216,74 @@ void Terrain::Init()
 	}
 
 
+	//###########################################################
+	// Now we average the positions so that the terrain is smooth
+	// NOTE: This should be done after the heights have been extracted
+	// NOTE2: This should only average the HEIGHTS
+	uint32_t ii = 0;
+	uint32_t jj = 0;
+	float avgHeight = 0;
+	int vertCnt;
+	int oIdx;
+	for(uint16_t i=0; i < m_vertResolution.y; ++i)
+	{
+		for(uint16_t j=0; j < m_vertResolution.x; ++j)
+		{
+			// Get this vert index
+			idx = i * m_vertResolution.x + j;
+
+			// Reset variables
+			avgHeight = m_vertices[idx].y;
+			vertCnt = 1; // We use 1 because we always have at least 1 vertex in the avg, THIS VERTEX
+			oIdx = 0;
+			
+			// Check West vertex
+			if(j > 0)
+			{
+				jj = j-1;
+				ii = i;
+				oIdx = ii * m_vertResolution.x + jj;
+				avgHeight += m_vertices[oIdx].y;
+				vertCnt++;
+			}
+
+			// Check North vertex
+			if(i > 0)
+			{
+				jj = j;
+				ii = i-1;
+				oIdx = ii * m_vertResolution.x + jj;
+				avgHeight += m_vertices[oIdx].y;
+				vertCnt++;
+			}
+
+			// Check East vertex
+			if(j < m_vertResolution.x - 1)
+			{
+				jj = j+1;
+				ii = i;
+				oIdx = ii * m_vertResolution.x + jj;
+				avgHeight += m_vertices[oIdx].y;
+				vertCnt++;
+			}
+
+			// Check South vertex
+			if(i < m_vertResolution.y - 1)
+			{
+				jj = j;
+				ii = i+1;
+				oIdx = ii * m_vertResolution.x + jj;
+				avgHeight += m_vertices[oIdx].y;
+				vertCnt++;
+			}
+			avgHeight /= vertCnt;
+			m_vertices[idx].y = avgHeight;
+		}
+	}
+}
+void Terrain::InitTriIndices()
+{
+	//###########################################################
 	// Here we provided the indices of the vertices we're going to use to draw the tris
 	// and in what order.
 	int v1 = 0;
@@ -248,4 +317,13 @@ void Terrain::Init()
 			m_indices[idxCnt++] = v2;
 		}
 	}
+}
+
+void Terrain::Init()
+{
+	InitTriVertices();
+	InitTriIndices();
+
+
+	
 }
