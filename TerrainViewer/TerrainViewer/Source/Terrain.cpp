@@ -3,8 +3,8 @@
 
 void Terrain::Setup()
 {
+	m_heightmap1 = LoadImage("Source\\HeightMap1.bmp");
 	RenderObjBase::Setup();
-	m_testTex = LoadImage("Source\\HeightMap1.bmp");
 	printOpenGLError();
 }
 
