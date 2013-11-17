@@ -100,6 +100,7 @@
     <ClInclude Include="Source\RenderObjTest.h" />
     <ClInclude Include="Source\Simulation.h" />
     <ClInclude Include="Source\Terrain.h" />
+    <ClInclude Include="Source\TextureData.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\CubeFrag.txt" />
