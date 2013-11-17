@@ -5,7 +5,7 @@
 void Terrain::Setup()
 {
 	m_heightmap1 = LoadImage("Source\\HeightMap1.bmp");
-	//GetHeightData();
+	GetHeightData();
 	InitTriVertices();
 	InitTriIndices();
 
@@ -199,17 +199,20 @@ glm::vec4 Terrain::GetTexel( TextureData* _texData,  int _x, int _y)
 	assert( _y < _texData->m_texHeight);
 	assert( _texData->m_byteCnt > 0);
 	assert( _texData->m_texData != NULL);
-	int idx = _y * _texData->TexByteWidth() + _x * _texData->TexByteWidth();
+	int idx = _y * _texData->TexByteWidth();
 	glm::vec4 retval;
-	switch(_texData->m_texType)
+
+	switch( _texData->m_format)
 	{
 	case GL_RGB:
+		idx += _x * 3;
 		retval = glm::vec4(_texData->m_texData[idx],
 							_texData->m_texData[idx+1],
 							_texData->m_texData[idx+2],
 							0.f);
 		break;
 	case GL_RGBA:
+		idx += _x * 4;
 		retval = glm::vec4(_texData->m_texData[idx],
 			_texData->m_texData[idx+1],
 			_texData->m_texData[idx+2],
@@ -222,24 +225,28 @@ glm::vec4 Terrain::GetTexel( TextureData* _texData,  int _x, int _y)
 void Terrain::GetTextureData( GLuint _tex, GLenum _texType, TextureData* _texData )
 {
 	_texData->m_texType = _texType;
-	glBindTexture(_texData->m_texType, _tex);	
-	glGetTexLevelParameteriv( _texData->m_texType, 0, GL_TEXTURE_COMPONENTS, &_texData->m_format);
+	glBindTexture(_texData->m_texType, _tex);
+	GLint format;
+	glGetTexLevelParameteriv( _texData->m_texType, 0, GL_TEXTURE_INTERNAL_FORMAT, &format);
 	glGetTexLevelParameteriv( _texData->m_texType, 0, GL_TEXTURE_WIDTH, &_texData->m_texWidth); 
 	glGetTexLevelParameteriv( _texData->m_texType, 0, GL_TEXTURE_HEIGHT, &_texData->m_texHeight);
 	_texData->m_byteCnt = _texData->m_texWidth*_texData->m_texHeight;
 	
-	switch(_texData->m_format)
+	switch(format)
 	{
-	case GL_RGB:
+	case 3:
 		_texData->m_channels = 3;
 		_texData->m_byteCnt *= 3;
+		_texData->m_format = GL_RGB;
 		break;
-	case GL_RGBA:
+	case 4:
 		_texData->m_channels = 4;
 		_texData->m_byteCnt *= 4;
+		_texData->m_format = GL_RGBA;
 		break;
 	}
 	_texData->SetupData(_texData->m_byteCnt);
+	glBindTexture(_texData->m_texType, _tex);	
 	glGetTexImage(_texData->m_texType, 0, _texData->m_format, GL_UNSIGNED_BYTE, _texData->m_texData);
 	glBindTexture(_texData->m_texType, 0);	
 }
@@ -248,6 +255,7 @@ glm::vec4 VecLerp( glm::vec4 _from, glm::vec4 _to, float _pct)
 {
 	return _from + (_to - _from) * _pct;
 }
+
 glm::vec4 Terrain::SampleTexture_Linear( glm::vec2 _coords, TextureData* _texData )
 {
 	float x = (_texData->m_texWidth-1) * _coords.x; // Get X coord in texture
@@ -278,12 +286,13 @@ void Terrain::GetHeightData()
 	for(uint32_t y=0; y<m_vertResolution.y; ++y)
 	{
 		// Define coords in range of [0-1]
-		coords.y = y/(m_vertResolution.y-1);
+		coords.y = y/(m_vertResolution.y-1.f);
 		for(uint32_t x=0; x<m_vertResolution.x; ++x)
 		{
-			coords.x = x/(m_vertResolution.x-1);
+			coords.x = x/(m_vertResolution.x-1.f);
 			texSample = SampleTexture_Linear(coords, &rawTexData);
-			m_heightData[y * m_vertResolution.x + x] = texSample.x;
+			// Values are going to be in range of [0-255], need to make them in range of [0-1]
+			m_heightData[y * m_vertResolution.x + x] = texSample.x / 255.f;
 		}
 	}
 }
@@ -308,8 +317,8 @@ void Terrain::InitTriVertices()
 		for(uint16_t j=0; j < m_vertResolution.x; ++j)
 		{
 			idx = i * m_vertResolution.x + j;
-			//m_vertices[idx] = glm::vec4(xPos, m_heightData[idx], zPos, 1.f);
-			m_vertices[idx] = glm::vec4(xPos, 0.f, zPos, 1.f);
+			m_vertices[idx] = glm::vec4(xPos, m_heightData[idx], zPos, 1.f);
+			//m_vertices[idx] = glm::vec4(xPos, 0.f, zPos, 1.f);
 			xPos+=wInc;
 
 			m_texCoords[idx] = glm::vec2(texXPos, texYPos);

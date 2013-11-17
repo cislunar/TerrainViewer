@@ -33,8 +33,8 @@ public:
 		return m_texWidth * m_channels;
 	}
 
-	GLenum m_texType;
-	GLint m_format, m_texWidth, m_texHeight;
+	GLenum m_texType, m_format;
+	GLint m_texWidth, m_texHeight;
 	uint32_t m_byteCnt;
 	uint8_t m_channels;
 	unsigned char* m_texData;

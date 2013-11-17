@@ -10,7 +10,7 @@ public:
 	{
 		m_position = glm::vec4(0,0,0,1);
 		m_modelScale = glm::vec3(20, 2, 20);
-		m_scaler =  glm::vec2( 10000.f, 10000.f);
+		m_scaler =  glm::vec2( 5000, 5000.f);
 		m_faceResolution = glm::uvec2(256,256);
 		m_vertResolution = m_faceResolution + glm::uvec2(1,1);
 
