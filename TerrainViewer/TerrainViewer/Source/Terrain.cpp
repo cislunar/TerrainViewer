@@ -4,7 +4,7 @@
 
 void Terrain::Setup()
 {
-	m_heightmap1 = LoadImage("Source\\HeightMap1.bmp");
+	m_heightmap1 = LoadImage("Source\\HeightMap2.bmp");
 	GetHeightData();
 	InitTriVertices();
 	InitTriIndices();
