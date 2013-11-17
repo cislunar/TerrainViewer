@@ -330,7 +330,7 @@ void Terrain::InitTriVertices()
 		zPos-=dInc;
 		texYPos+=dInc;
 	}
-	//SmoothVertices();
+	SmoothVertices();
 }
 void Terrain::SmoothVertices()
 {

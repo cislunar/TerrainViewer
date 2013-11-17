@@ -18,7 +18,7 @@ vec4 newPos;
 void main(void)
 {
 	//UV = vertexUV;
-	heightColor = vec4(in_Position.y, 0,  0, 1);//texture( heightMap, vertexUV);
+	heightColor = vec4(in_Position.y, in_Position.y,  in_Position.y, 1);//texture( heightMap, vertexUV);
 	//heightColor = texture( heightMap, vertexUV);
 	newPos = in_Position;
 	//newPos.y = texture( heightMap, vertexUV ).r;
