@@ -1,0 +1,33 @@
+#version 400
+
+layout (triangles) in;
+layout (line_strip, max_vertices = 8 ) out;
+
+in GS_VERTEX_DATA
+{
+	vec3 n;
+} gs_vertData[];
+
+uniform mat4 ModelMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ProjectionMatrix;
+
+out vec4 color;
+
+void main(void)
+{
+	// Normals for the triangle vertices
+    for (int i = 0; i < gl_in.length (); ++i)
+    {
+        color = vec4 (1.f, .3f, .3f, 1.f);
+        gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * gl_in[i].gl_Position;
+        EmitVertex ();
+ 
+        color = vec4 (0.f);
+        gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix 
+			* (gl_in[i].gl_Position + vec4 (vertexData[i].normal * .10.f, 0.f));
+        EmitVertex ();
+ 
+        EndPrimitive ();
+    }
+}

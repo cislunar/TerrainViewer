@@ -10,7 +10,7 @@ public:
 	{
 		m_position = glm::vec4(0,0,0,1);
 		m_modelScale = glm::vec3(20, 2, 20);
-		m_scaler =  glm::vec2( 5000, 5000.f);
+		m_scaler =  glm::vec2( 15000, 15000.f);
 		m_faceResolution = glm::uvec2(256,256);
 		m_vertResolution = m_faceResolution + glm::uvec2(1,1);
 
@@ -83,44 +83,48 @@ public:
 			m_heightData = NULL;
 		}
 	}
-	virtual void Render(void);
-	virtual glm::mat4 GetModelMat();
-	void Setup();
-	void Cleanup();
-	glm::vec2* GetScale() {return &m_scaler;}
+
+	virtual void		Render(void);
+	virtual glm::mat4	GetModelMat();
+	void				Setup();
+	void				Cleanup();
+	glm::vec2*			GetScale() {return &m_scaler;}
 
 protected:
-	virtual void CreateVBO(void);
-	virtual void CreateShaders(void);
-	virtual void DestroyVBO(void);
-	virtual void DestroyShaders(void);
-	void BindForRender();
-	void UnbindForRender();
-	int TriCount();
-	int VerticesCnt();
-	int IndicesCount();
-	glm::vec4 GetTexel( TextureData* _texData,  int _x, int _y);
-	void GetTextureData( GLuint _tex, GLenum _texType, TextureData* _texData );
-	glm::vec4 SampleTexture_Linear( glm::vec2 _coords, TextureData* _texData );
-	void GetHeightData();
-	void Terrain::SmoothVertices();
+	virtual void		CreateVBO(void);
+	virtual void		CreateShaders(void);
+	virtual void		DestroyVBO(void);
+	virtual void		DestroyShaders(void);
+	void				BindForRender();
+	void				UnbindForRender();
+	int					TriCount();
+	int					VerticesCnt();
+	int					IndicesCount();
+	glm::vec4			GetTexel( TextureData* _texData,  int _x, int _y);
+	void				GetTextureData( GLuint _tex, GLenum _texType, TextureData* _texData );
+	glm::vec4			SampleTexture_Linear( glm::vec2 _coords, TextureData* _texData );
+	void				GetHeightData();
+	void				SmoothVertices();
+	void				CreateTerrainShader();
+	void				CreateTerrainVBO();
+	void				InitTriVertices();
+	void				InitTriIndices();
 private:
-	void InitTriVertices();
-	void InitTriIndices();
+	
 
-	glm::vec4* m_vertices;
-	GLuint* m_indices; 
-	float* m_heightData;
-	glm::vec2* m_texCoords;
-	glm::vec3* m_vertNormals;
-	glm::uvec2 m_faceResolution;
-	glm::uvec2 m_vertResolution;
-	glm::vec4 m_position;
-	GLuint m_testTex;
-	GLuint m_heightmap1;
-	GLuint m_txbo;
-	glm::vec3 m_modelScale;
-	glm::vec2 m_scaler;
+	glm::vec4*	m_vertices;
+	GLuint*		m_indices; 
+	float*		m_heightData;
+	glm::vec2*	m_texCoords;
+	glm::vec3*	m_vertNormals;
+	glm::uvec2	m_faceResolution;
+	glm::uvec2	m_vertResolution;
+	glm::vec4	m_position;
+	GLuint		m_testTex;
+	GLuint		m_heightmap1;
+	GLuint		m_txbo;
+	glm::vec3	m_modelScale;
+	glm::vec2	m_scaler;
 	GLuint
 		ProjectionMatrixUniformLocation,
 		ViewMatrixUniformLocation,

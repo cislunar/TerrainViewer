@@ -19,14 +19,13 @@ void Terrain::Cleanup()
 	glDeleteTextures(1, &m_heightmap1);
 }
 
-void Terrain::CreateVBO()
+void Terrain::CreateTerrainVBO()
 {
-
-	glUseProgram(m_renderInfo.ProgramId);
+	glUseProgram(m_terrainShader.ProgramId);
 
 	// Vertex array object (creates a place to store vertices)
-	glGenVertexArrays(1, &m_renderInfo.VaoId);
-	glBindVertexArray(m_renderInfo.VaoId);
+	glGenVertexArrays(1, &m_terrainShader.VaoId);
+	glBindVertexArray(m_terrainShader.VaoId);
 	printOpenGLError();
 
 	// Enables vertex shader attributes for use
@@ -34,12 +33,12 @@ void Terrain::CreateVBO()
 
 	// creates a buffer object to transfer vertices data to vertex array
 	// then buffers the data
-	glGenBuffers(1, &m_renderInfo.VboId);
-	glBindBuffer(GL_ARRAY_BUFFER, m_renderInfo.VboId);
+	glGenBuffers(1, &m_terrainShader.VboId);
+	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
 	glBufferData(	GL_ARRAY_BUFFER, 
-					sizeof(glm::vec4) * m_vertResolution.x * m_vertResolution.y, 
-					m_vertices, 
-					GL_STATIC_DRAW);
+		sizeof(glm::vec4) * m_vertResolution.x * m_vertResolution.y, 
+		m_vertices, 
+		GL_STATIC_DRAW);
 	printOpenGLError();
 
 	// defines the data we just transferred to the gpu
@@ -55,23 +54,23 @@ void Terrain::CreateVBO()
 	// Get texture uv location and upload
 	glBindBuffer(GL_ARRAY_BUFFER, m_txbo);
 	glBufferData(	GL_ARRAY_BUFFER, 
-					sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x, 
-					m_texCoords, 
-					GL_STATIC_DRAW);
+		sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x, 
+		m_texCoords, 
+		GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	printOpenGLError();
 
 
 	// Determines the draw order of the vertices we transferred to gpu
-	glGenBuffers(1, &m_renderInfo.IndexBufferId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_renderInfo.IndexBufferId);
+	glGenBuffers(1, &m_terrainShader.IndexBufferId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_terrainShader.IndexBufferId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IndicesCount(), m_indices, GL_STATIC_DRAW);
 	printOpenGLError();
 
 	// Get texture location
-	m_texLocation = glGetUniformLocation(m_renderInfo.ProgramId, "heightMap");
+	m_texLocation = glGetUniformLocation(m_terrainShader.ProgramId, "heightMap");
 	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
-	glProgramUniform1i(m_renderInfo.ProgramId, m_texLocation , 0);
+	glProgramUniform1i(m_terrainShader.ProgramId, m_texLocation , 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_heightmap1);	
 
@@ -80,7 +79,12 @@ void Terrain::CreateVBO()
 	glUseProgram(0);
 }
 
-void Terrain::CreateShaders()
+void Terrain::CreateVBO()
+{
+	CreateTerrainVBO();
+}
+
+void Terrain::CreateTerrainShader()
 {
 	// Load the shader
 	ShaderFiles sFiles;
@@ -88,28 +92,33 @@ void Terrain::CreateShaders()
 	sFiles.vertFile = (char *)malloc(sizeof(char) * (32));
 	memcpy(sFiles.vertFile, "Source\\TerrainVert.txt", sizeof(char) * (32));
 	memcpy(sFiles.fragFile, "Source\\TerrainFrag.txt", sizeof(char) * (32));
-	LoadShader(&m_renderInfo, sFiles);
+	LoadShader(&m_terrainShader, sFiles);
 
-	ModelMatrixUniformLocation = glGetUniformLocation(m_renderInfo.ProgramId, "ModelMatrix");
-	ViewMatrixUniformLocation = glGetUniformLocation(m_renderInfo.ProgramId, "ViewMatrix");
-	ProjectionMatrixUniformLocation = glGetUniformLocation(m_renderInfo.ProgramId, "ProjectionMatrix");
+	ModelMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ModelMatrix");
+	ViewMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ViewMatrix");
+	ProjectionMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ProjectionMatrix");
 	printOpenGLError();
 
 	free(sFiles.fragFile);
 	free(sFiles.vertFile);
 }
 
+void Terrain::CreateShaders()
+{
+	CreateTerrainShader();
+}
+
 void Terrain::DestroyShaders()
 {
-	glDetachShader(m_renderInfo.ProgramId, m_renderInfo.FragmentShaderId);
-	glDetachShader(m_renderInfo.ProgramId, m_renderInfo.VertexShaderId);
+	glDetachShader(m_terrainShader.ProgramId, m_terrainShader.FragmentShaderId);
+	glDetachShader(m_terrainShader.ProgramId, m_terrainShader.VertexShaderId);
 	printOpenGLError();
 
-	glDeleteShader(m_renderInfo.FragmentShaderId);
-	glDeleteShader(m_renderInfo.VertexShaderId);
+	glDeleteShader(m_terrainShader.FragmentShaderId);
+	glDeleteShader(m_terrainShader.VertexShaderId);
 	printOpenGLError();
 
-	glDeleteProgram(m_renderInfo.ProgramId);
+	glDeleteProgram(m_terrainShader.ProgramId);
 	printOpenGLError();
 }
 
@@ -117,9 +126,9 @@ void Terrain::DestroyVBO()
 {
 	UnbindForRender();
 	glDeleteBuffers(1, &m_txbo);
-	glDeleteBuffers(1, &m_renderInfo.IndexBufferId);
-	glDeleteBuffers(1, &m_renderInfo.VboId);
-	glDeleteVertexArrays(1, &m_renderInfo.VaoId);
+	glDeleteBuffers(1, &m_terrainShader.IndexBufferId);
+	glDeleteBuffers(1, &m_terrainShader.VboId);
+	glDeleteVertexArrays(1, &m_terrainShader.VaoId);
 	printOpenGLError();
 }
 
@@ -170,7 +179,7 @@ glm::mat4 Terrain::GetModelMat()
 void Terrain::BindForRender()
 {
 	// use the shader
-	glUseProgram(m_renderInfo.ProgramId);
+	glUseProgram(m_terrainShader.ProgramId);
 	printOpenGLError();
 
 
@@ -184,7 +193,7 @@ void Terrain::BindForRender()
 	glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
 
 	// bind the vertex array
-	glBindVertexArray(m_renderInfo.VaoId);
+	glBindVertexArray(m_terrainShader.VaoId);
 }
 
 void Terrain::UnbindForRender()

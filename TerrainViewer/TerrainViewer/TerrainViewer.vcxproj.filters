@@ -86,6 +86,15 @@
     <None Include="Source\HeightMap1.bmp">
       <Filter>Source</Filter>
     </None>
+    <None Include="Source\TerrainNormalsVert.txt">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="Source\TerrainNormalsGeo.txt">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="Source\TerrainNormalsFrag.txt">
+      <Filter>Source</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Headers">

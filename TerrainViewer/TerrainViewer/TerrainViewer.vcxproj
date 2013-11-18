@@ -107,6 +107,9 @@
     <None Include="Source\CubeVert.txt" />
     <None Include="Source\HeightMap1.bmp" />
     <None Include="Source\TerrainFrag.txt" />
+    <None Include="Source\TerrainNormalsFrag.txt" />
+    <None Include="Source\TerrainNormalsGeo.txt" />
+    <None Include="Source\TerrainNormalsVert.txt" />
     <None Include="Source\TerrainVert.txt" />
     <None Include="Source\TexTest.png" />
   </ItemGroup>
