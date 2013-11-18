@@ -79,9 +79,70 @@ void Terrain::CreateTerrainVBO()
 	glUseProgram(0);
 }
 
+void Terrain::CreateNormalsVBO()
+{
+	glUseProgram(m_terrainShader.ProgramId);
+
+	// Vertex array object (creates a place to store vertices)
+	glGenVertexArrays(1, &m_terrainShader.VaoId);
+	glBindVertexArray(m_terrainShader.VaoId);
+	printOpenGLError();
+
+	// Enables vertex shader attributes for use
+	glEnableVertexAttribArray(0);
+
+	// creates a buffer object to transfer vertices data to vertex array
+	// then buffers the data
+	glGenBuffers(1, &m_terrainShader.VboId);
+	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
+	glBufferData(	GL_ARRAY_BUFFER, 
+		sizeof(glm::vec4) * m_vertResolution.x * m_vertResolution.y, 
+		m_vertices, 
+		GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// defines the data we just transferred to the gpu
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
+
+	// Enables vertex shader attribute for use
+	glEnableVertexAttribArray(1);
+
+	// Create and bind texture buffer object
+	glGenBuffers(1, &m_txbo);
+
+	// Get texture uv location and upload
+	glBindBuffer(GL_ARRAY_BUFFER, m_txbo);
+	glBufferData(	GL_ARRAY_BUFFER, 
+		sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x, 
+		m_texCoords, 
+		GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
+
+
+	// Determines the draw order of the vertices we transferred to gpu
+	glGenBuffers(1, &m_terrainShader.IndexBufferId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_terrainShader.IndexBufferId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IndicesCount(), m_indices, GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// Get texture location
+	m_texLocation = glGetUniformLocation(m_terrainShader.ProgramId, "heightMap");
+	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
+	glProgramUniform1i(m_terrainShader.ProgramId, m_texLocation , 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_heightmap1);	
+
+	// Detaches vertex array
+	glBindVertexArray(0);
+	glUseProgram(0);
+}
+
 void Terrain::CreateVBO()
 {
 	CreateTerrainVBO();
+	CreateNormalsVBO();
 }
 
 void Terrain::CreateTerrainShader()

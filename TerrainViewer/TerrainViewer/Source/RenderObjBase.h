@@ -21,7 +21,7 @@ protected:
 	virtual void DestroyVBO(void)		= 0;
 	virtual void DestroyShaders(void)	= 0;
 
-	ShaderInfo m_terrainShader;
+	ShaderInfo m_shaderInfo;
 
 private:
 };

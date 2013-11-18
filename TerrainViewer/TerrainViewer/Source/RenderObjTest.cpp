@@ -17,12 +17,12 @@ void RenderObjTest::Render()
 
 void RenderObjTest::BindForRender()
 {
-	glUseProgram(m_terrainShader.ProgramId);
-	glBindVertexArray(m_terrainShader.VaoId);
-	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
+	glUseProgram(m_shaderInfo.ProgramId);
+	glBindVertexArray(m_shaderInfo.VaoId);
+	glBindBuffer(GL_ARRAY_BUFFER, m_shaderInfo.VboId);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_terrainShader.IndexBufferId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_shaderInfo.IndexBufferId);
 
 }
 
@@ -95,15 +95,15 @@ void RenderObjTest::CreateVBO(void)
 	const size_t RgbOffset = sizeof(Vertices[0].Position);
 
 	// Generates array that describes how the vertex attributes are stored in VBO
-	glGenVertexArrays(1, &m_terrainShader.VaoId);
-	glBindVertexArray(m_terrainShader.VaoId);
+	glGenVertexArrays(1, &m_shaderInfo.VaoId);
+	glBindVertexArray(m_shaderInfo.VaoId);
 
 	// Generates the actual buffer, and handle, to store the vertices
-	glGenBuffers(1, &m_terrainShader.VboId);
+	glGenBuffers(1, &m_shaderInfo.VboId);
 	// Makes VboId the current buffer by binding it as a GL_ARRAY_BUFFER. 
 	// Until another is bound, or this one unbound,
 	// all buffer related operations execute on this buffer
-	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
+	glBindBuffer(GL_ARRAY_BUFFER, m_shaderInfo.VboId);
 	// Uploads data to currently bound buffer
 	glBufferData(GL_ARRAY_BUFFER, BufferSize, Vertices, GL_STATIC_DRAW);
 	// glVertexAttribPointer defines the data that was just buffered by labeling 
@@ -125,10 +125,10 @@ void RenderObjTest::CreateVBO(void)
 	glEnableVertexAttribArray(1);
 
 	// Generates index buffer id
-	glGenBuffers(1, &m_terrainShader.IndexBufferId);
+	glGenBuffers(1, &m_shaderInfo.IndexBufferId);
 	// specifies that the buffer we're uploading is an array that details
 	// which vertices we are using and in what order
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_terrainShader.IndexBufferId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_shaderInfo.IndexBufferId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
 
 
@@ -152,11 +152,11 @@ void RenderObjTest::DestroyVBO(void)
 
 	UnbindForRender();
 
-	glDeleteBuffers(1, &m_terrainShader.VboId);
+	glDeleteBuffers(1, &m_shaderInfo.VboId);
 
-	glDeleteBuffers(1, &m_terrainShader.IndexBufferId);
+	glDeleteBuffers(1, &m_shaderInfo.IndexBufferId);
 
-	glDeleteVertexArrays(1, &m_terrainShader.VaoId);
+	glDeleteVertexArrays(1, &m_shaderInfo.VaoId);
 
 	ErrorCheckValue = glGetError();
 	if (ErrorCheckValue != GL_NO_ERROR)
@@ -186,19 +186,19 @@ void RenderObjTest::CreateShaders(void)
 		exit(-1);
 	}
 
-	m_terrainShader.VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(m_terrainShader.VertexShaderId, 1, &VertexShader, NULL);
-	glCompileShader(m_terrainShader.VertexShaderId);
+	m_shaderInfo.VertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(m_shaderInfo.VertexShaderId, 1, &VertexShader, NULL);
+	glCompileShader(m_shaderInfo.VertexShaderId);
 
-	m_terrainShader.FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(m_terrainShader.FragmentShaderId, 1, &FragmentShader, NULL);
-	glCompileShader(m_terrainShader.FragmentShaderId);
+	m_shaderInfo.FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(m_shaderInfo.FragmentShaderId, 1, &FragmentShader, NULL);
+	glCompileShader(m_shaderInfo.FragmentShaderId);
 
-	m_terrainShader.ProgramId = glCreateProgram();
-	glAttachShader(m_terrainShader.ProgramId, m_terrainShader.VertexShaderId);
-	glAttachShader(m_terrainShader.ProgramId, m_terrainShader.FragmentShaderId);
-	glLinkProgram(m_terrainShader.ProgramId);
-	glUseProgram(m_terrainShader.ProgramId);
+	m_shaderInfo.ProgramId = glCreateProgram();
+	glAttachShader(m_shaderInfo.ProgramId, m_shaderInfo.VertexShaderId);
+	glAttachShader(m_shaderInfo.ProgramId, m_shaderInfo.FragmentShaderId);
+	glLinkProgram(m_shaderInfo.ProgramId);
+	glUseProgram(m_shaderInfo.ProgramId);
 
 	ErrorCheckValue = glGetError();
 	if (ErrorCheckValue != GL_NO_ERROR)
@@ -219,13 +219,13 @@ void RenderObjTest::DestroyShaders(void)
 
 	glUseProgram(0);
 
-	glDetachShader(m_terrainShader.ProgramId, m_terrainShader.VertexShaderId);
-	glDetachShader(m_terrainShader.ProgramId, m_terrainShader.FragmentShaderId);
+	glDetachShader(m_shaderInfo.ProgramId, m_shaderInfo.VertexShaderId);
+	glDetachShader(m_shaderInfo.ProgramId, m_shaderInfo.FragmentShaderId);
 
-	glDeleteShader(m_terrainShader.FragmentShaderId);
-	glDeleteShader(m_terrainShader.VertexShaderId);
+	glDeleteShader(m_shaderInfo.FragmentShaderId);
+	glDeleteShader(m_shaderInfo.VertexShaderId);
 
-	glDeleteProgram(m_terrainShader.ProgramId);
+	glDeleteProgram(m_shaderInfo.ProgramId);
 
 	ErrorCheckValue = glGetError();
 	if (ErrorCheckValue != GL_NO_ERROR)

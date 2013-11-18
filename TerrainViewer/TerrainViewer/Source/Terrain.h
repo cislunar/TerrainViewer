@@ -105,6 +105,7 @@ protected:
 	glm::vec4			SampleTexture_Linear( glm::vec2 _coords, TextureData* _texData );
 	void				GetHeightData();
 	void				SmoothVertices();
+	void				CreateNormalsVBO();
 	void				CreateTerrainShader();
 	void				CreateTerrainVBO();
 	void				InitTriVertices();
@@ -125,6 +126,9 @@ private:
 	GLuint		m_txbo;
 	glm::vec3	m_modelScale;
 	glm::vec2	m_scaler;
+	ShaderInfo	m_terrainShader;
+	ShaderInfo	m_normalsShader;
+
 	GLuint
 		ProjectionMatrixUniformLocation,
 		ViewMatrixUniformLocation,

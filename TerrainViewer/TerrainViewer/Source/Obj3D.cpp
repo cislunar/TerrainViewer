@@ -27,11 +27,11 @@ void Obj3D::CreateVBO()
 		7,5,6,  7,4,5
 	};
 
-	glUseProgram(m_terrainShader.ProgramId);
+	glUseProgram(m_shaderInfo.ProgramId);
 
 	// Vertex array object (creates a place to store vertices)
-	glGenVertexArrays(1, &m_terrainShader.VaoId);
-	glBindVertexArray(m_terrainShader.VaoId);
+	glGenVertexArrays(1, &m_shaderInfo.VaoId);
+	glBindVertexArray(m_shaderInfo.VaoId);
 	printOpenGLError();
 
 	// Enables vertex shader attributes for use
@@ -40,8 +40,8 @@ void Obj3D::CreateVBO()
 
 	// creates a buffer object to transfer vertices data to vertex array
 	// then buffers the data
-	glGenBuffers(1, &m_terrainShader.VboId);
-	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
+	glGenBuffers(1, &m_shaderInfo.VboId);
+	glBindBuffer(GL_ARRAY_BUFFER, m_shaderInfo.VboId);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVerts), cubeVerts, GL_STATIC_DRAW);
 	printOpenGLError();
 
@@ -52,8 +52,8 @@ void Obj3D::CreateVBO()
 	printOpenGLError();
 
 	// Determines the draw order of the vertices we transferred to gpu
-	glGenBuffers(1, &m_terrainShader.IndexBufferId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_terrainShader.IndexBufferId);
+	glGenBuffers(1, &m_shaderInfo.IndexBufferId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_shaderInfo.IndexBufferId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 	printOpenGLError();
 
@@ -70,11 +70,11 @@ void Obj3D::CreateShaders()
 	sFiles.vertFile = (char *)malloc(sizeof(char) * (32));
 	memcpy(sFiles.vertFile, "Source\\CubeVert.txt", sizeof(char) * (32));
 	memcpy(sFiles.fragFile, "Source\\CubeFrag.txt", sizeof(char) * (32));
-	LoadShader(&m_terrainShader, sFiles);
+	LoadShader(&m_shaderInfo, sFiles);
 
-	ModelMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ModelMatrix");
-	ViewMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ViewMatrix");
-	ProjectionMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ProjectionMatrix");
+	ModelMatrixUniformLocation = glGetUniformLocation(m_shaderInfo.ProgramId, "ModelMatrix");
+	ViewMatrixUniformLocation = glGetUniformLocation(m_shaderInfo.ProgramId, "ViewMatrix");
+	ProjectionMatrixUniformLocation = glGetUniformLocation(m_shaderInfo.ProgramId, "ProjectionMatrix");
 	printOpenGLError();
 
 	free(sFiles.fragFile);
@@ -83,24 +83,24 @@ void Obj3D::CreateShaders()
 
 void Obj3D::DestroyShaders()
 {
-	glDetachShader(m_terrainShader.ProgramId, m_terrainShader.FragmentShaderId);
-	glDetachShader(m_terrainShader.ProgramId, m_terrainShader.VertexShaderId);
+	glDetachShader(m_shaderInfo.ProgramId, m_shaderInfo.FragmentShaderId);
+	glDetachShader(m_shaderInfo.ProgramId, m_shaderInfo.VertexShaderId);
 	printOpenGLError();
 
-	glDeleteShader(m_terrainShader.FragmentShaderId);
-	glDeleteShader(m_terrainShader.VertexShaderId);
+	glDeleteShader(m_shaderInfo.FragmentShaderId);
+	glDeleteShader(m_shaderInfo.VertexShaderId);
 	printOpenGLError();
 
-	glDeleteProgram(m_terrainShader.ProgramId);
+	glDeleteProgram(m_shaderInfo.ProgramId);
 	printOpenGLError();
 }
 
 void Obj3D::DestroyVBO()
 {
 	UnbindForRender();
-	glDeleteBuffers(1, &m_terrainShader.IndexBufferId);
-	glDeleteBuffers(1, &m_terrainShader.VboId);
-	glDeleteVertexArrays(1, &m_terrainShader.VaoId);
+	glDeleteBuffers(1, &m_shaderInfo.IndexBufferId);
+	glDeleteBuffers(1, &m_shaderInfo.VboId);
+	glDeleteVertexArrays(1, &m_shaderInfo.VaoId);
 	printOpenGLError();
 }
 
@@ -134,7 +134,7 @@ glm::mat4 Obj3D::GetModelMat()
 void Obj3D::BindForRender()
 {
 	// use the shader
-	glUseProgram(m_terrainShader.ProgramId);
+	glUseProgram(m_shaderInfo.ProgramId);
 	printOpenGLError();
 	
 
@@ -148,7 +148,7 @@ void Obj3D::BindForRender()
 	glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
 
 	// bind the vertex array
-	glBindVertexArray(m_terrainShader.VaoId);
+	glBindVertexArray(m_shaderInfo.VaoId);
 }
 
 void Obj3D::UnbindForRender()
