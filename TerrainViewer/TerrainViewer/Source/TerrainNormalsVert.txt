@@ -2,10 +2,7 @@
 
 // Input data
 layout(location=0) in vec4 in_Position;
-layout(location=1) in vec4 normal;
-uniform mat4 ModelMatrix;
-uniform mat4 ViewMatrix;
-uniform mat4 ProjectionMatrix;
+layout(location=1) in vec3 normal;
 
 out GS_VERTEX_DATA
 {
@@ -14,9 +11,6 @@ out GS_VERTEX_DATA
 
 void main(void)
 {
-	gs_vertData.mMat = ModelMatrix;
-	gs_vertData.vMat = ViewMatrix;
-	gs_vertData.pMat = ProjectionMatrix;
 	gs_vertData.n = normal;
     gl_Position = in_Position;
 }

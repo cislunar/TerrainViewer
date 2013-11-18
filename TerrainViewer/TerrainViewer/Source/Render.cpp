@@ -186,30 +186,51 @@ GLuint LoadImage( char* filename )
 
 void LoadShader(ShaderInfo* _shader, ShaderFiles sFiles)
 {
-	char *vs = NULL,*fs = NULL;
+	char *vs = NULL,*fs = NULL, *gs = NULL;
 
-	GLuint vert	= 0;
-	vert =	glCreateShader(GL_VERTEX_SHADER);
-	GLuint frag	= glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint vert, geom, frag;
+	vert= glCreateShader(GL_VERTEX_SHADER);
+	if(sFiles.geomFile != NULL)
+	{
+		geom	= glCreateShader(GL_GEOMETRY_SHADER);
+	}
+	frag	= glCreateShader(GL_FRAGMENT_SHADER);
 
 	// Read in the shader files
 	vs = textFileRead(sFiles.vertFile);
+	if(sFiles.geomFile != NULL)
+	{
+		gs = textFileRead(sFiles.geomFile);
+	}
 	fs = textFileRead(sFiles.fragFile);
 
 	const char * vv = vs;
+	const char * gg = gs;
 	const char * ff = fs;
 
 	// Grab source files for vert and frag shaders
 	glShaderSource(vert, 1, &vv,NULL);
+	if(sFiles.geomFile != NULL)
+	{
+		glShaderSource(geom, 1, &gg,NULL);
+	}
 	glShaderSource(frag, 1, &ff,NULL);
 
 	free((char*)vv);
+	free((char*)gg);
 	free((char*)ff);
 
 	// Compile Shaders--------------------------------------------------------
 	// Compile vertex shader, then test if it was successful
 	glCompileShader(vert);
 	GLQueryCompileStatus(vert, GL_VERTEX_SHADER);
+
+	if(sFiles.geomFile != NULL)
+	{
+		// Compile fragment shader, then test if it was successful
+		glCompileShader(geom);
+		GLQueryCompileStatus(geom, GL_GEOMETRY_SHADER);
+	}
 
 	// Compile fragment shader, then test if it was successful
 	glCompileShader(frag);
@@ -221,6 +242,10 @@ void LoadShader(ShaderInfo* _shader, ShaderFiles sFiles)
 	// can have a main() function
 	GLuint prog = glCreateProgram();
 	glAttachShader(prog,frag);
+	if(sFiles.geomFile != NULL)
+	{
+		glAttachShader(prog,geom);
+	}
 	glAttachShader(prog,vert);
 
 	// Link Programs-----------------------------------------------------------------
@@ -235,6 +260,10 @@ void LoadShader(ShaderInfo* _shader, ShaderFiles sFiles)
 
 	// Assign values
 	_shader->VertexShaderId = vert;
+	if(sFiles.geomFile != NULL)
+	{
+		_shader->GeometryShaderId = geom;
+	}
 	_shader->FragmentShaderId = frag;
 	_shader->ProgramId = prog;
 }

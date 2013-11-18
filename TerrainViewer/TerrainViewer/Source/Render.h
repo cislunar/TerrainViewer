@@ -31,6 +31,7 @@ struct ShaderInfo
 	GLuint
 		VertexShaderId,
 		FragmentShaderId,
+		GeometryShaderId,
 		ProgramId,
 		VaoId,
 		VboId,
@@ -39,7 +40,14 @@ struct ShaderInfo
 
 struct ShaderFiles
 {
+	ShaderFiles()
+	{
+		vertFile = NULL;
+		geomFile = NULL;
+		fragFile = NULL;
+	}
 	char* vertFile;
+	char* geomFile;
 	char* fragFile;
 };
 

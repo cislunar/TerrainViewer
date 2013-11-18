@@ -8,6 +8,7 @@ void Terrain::Setup()
 	GetHeightData();
 	InitTriVertices();
 	InitTriIndices();
+	InitNormals();
 
 	RenderObjBase::Setup();
 	printOpenGLError();
@@ -17,6 +18,58 @@ void Terrain::Cleanup()
 {
 	RenderObjBase::Cleanup();
 	glDeleteTextures(1, &m_heightmap1);
+}
+
+void Terrain::CreateNormalsVBO()
+{
+	glUseProgram(m_normalsShader.ProgramId);
+
+	// Vertex array object (creates a place to store vertices)
+	glGenVertexArrays(1, &m_normalsShader.VaoId);
+	glBindVertexArray(m_normalsShader.VaoId);
+	printOpenGLError();
+
+	// Enables vertex shader attributes for use
+	glEnableVertexAttribArray(0);
+
+	// creates a buffer object to transfer vertices data to vertex array
+	// then buffers the data
+	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
+	glBufferData(	GL_ARRAY_BUFFER, 
+		sizeof(glm::vec4) * m_vertResolution.x * m_vertResolution.y, 
+		m_vertices, 
+		GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// defines the data we just transferred to the gpu
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
+
+	// Enables vertex shader attribute for use
+	glEnableVertexAttribArray(1);
+
+	// creates a buffer object to transfer normals data to normals array
+	// then buffers the data
+	glGenBuffers(1, &m_normalsShader.VboId);
+	glBindBuffer(GL_ARRAY_BUFFER, m_normalsShader.VboId);
+	glBufferData(	GL_ARRAY_BUFFER, 
+		sizeof(glm::vec3) * m_vertResolution.x * m_vertResolution.y, 
+		m_vertNormals, 
+		GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// defines the data we just transferred to the gpu
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
+
+	// Determines the draw order of the vertices we transferred to gpu
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_terrainShader.IndexBufferId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IndicesCount(), m_indices, GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// Detaches vertex array
+	glBindVertexArray(0);
+	glUseProgram(0);
 }
 
 void Terrain::CreateTerrainVBO()
@@ -49,17 +102,16 @@ void Terrain::CreateTerrainVBO()
 	glEnableVertexAttribArray(1);
 
 	// Create and bind texture buffer object
-	glGenBuffers(1, &m_txbo);
+	glGenBuffers(1, &m_heightmapTxbo);
 
 	// Get texture uv location and upload
-	glBindBuffer(GL_ARRAY_BUFFER, m_txbo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_heightmapTxbo);
 	glBufferData(	GL_ARRAY_BUFFER, 
 		sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x, 
 		m_texCoords, 
 		GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	printOpenGLError();
-
 
 	// Determines the draw order of the vertices we transferred to gpu
 	glGenBuffers(1, &m_terrainShader.IndexBufferId);
@@ -68,69 +120,9 @@ void Terrain::CreateTerrainVBO()
 	printOpenGLError();
 
 	// Get texture location
-	m_texLocation = glGetUniformLocation(m_terrainShader.ProgramId, "heightMap");
+	m_terrainHeightmapLoc = glGetUniformLocation(m_terrainShader.ProgramId, "heightMap");
 	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
-	glProgramUniform1i(m_terrainShader.ProgramId, m_texLocation , 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_heightmap1);	
-
-	// Detaches vertex array
-	glBindVertexArray(0);
-	glUseProgram(0);
-}
-
-void Terrain::CreateNormalsVBO()
-{
-	glUseProgram(m_terrainShader.ProgramId);
-
-	// Vertex array object (creates a place to store vertices)
-	glGenVertexArrays(1, &m_terrainShader.VaoId);
-	glBindVertexArray(m_terrainShader.VaoId);
-	printOpenGLError();
-
-	// Enables vertex shader attributes for use
-	glEnableVertexAttribArray(0);
-
-	// creates a buffer object to transfer vertices data to vertex array
-	// then buffers the data
-	glGenBuffers(1, &m_terrainShader.VboId);
-	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
-	glBufferData(	GL_ARRAY_BUFFER, 
-		sizeof(glm::vec4) * m_vertResolution.x * m_vertResolution.y, 
-		m_vertices, 
-		GL_STATIC_DRAW);
-	printOpenGLError();
-
-	// defines the data we just transferred to the gpu
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-	printOpenGLError();
-
-	// Enables vertex shader attribute for use
-	glEnableVertexAttribArray(1);
-
-	// Create and bind texture buffer object
-	glGenBuffers(1, &m_txbo);
-
-	// Get texture uv location and upload
-	glBindBuffer(GL_ARRAY_BUFFER, m_txbo);
-	glBufferData(	GL_ARRAY_BUFFER, 
-		sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x, 
-		m_texCoords, 
-		GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-	printOpenGLError();
-
-
-	// Determines the draw order of the vertices we transferred to gpu
-	glGenBuffers(1, &m_terrainShader.IndexBufferId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_terrainShader.IndexBufferId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * IndicesCount(), m_indices, GL_STATIC_DRAW);
-	printOpenGLError();
-
-	// Get texture location
-	m_texLocation = glGetUniformLocation(m_terrainShader.ProgramId, "heightMap");
-	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
-	glProgramUniform1i(m_terrainShader.ProgramId, m_texLocation , 0);
+	glProgramUniform1i(m_terrainShader.ProgramId, m_terrainHeightmapLoc , 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_heightmap1);	
 
@@ -155,24 +147,57 @@ void Terrain::CreateTerrainShader()
 	memcpy(sFiles.fragFile, "Source\\TerrainFrag.txt", sizeof(char) * (32));
 	LoadShader(&m_terrainShader, sFiles);
 
-	ModelMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ModelMatrix");
-	ViewMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ViewMatrix");
-	ProjectionMatrixUniformLocation = glGetUniformLocation(m_terrainShader.ProgramId, "ProjectionMatrix");
+	m_terrainModelMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ModelMatrix");
+	m_terrainViewMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ViewMatrix");
+	m_terrainProjMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ProjectionMatrix");
 	printOpenGLError();
 
 	free(sFiles.fragFile);
 	free(sFiles.vertFile);
 }
 
+void Terrain::CreateNormalShader()
+{
+	// Load the shader
+	ShaderFiles sFiles;
+	sFiles.fragFile = (char *)malloc(sizeof(char) * (64));
+	sFiles.geomFile = (char *)malloc(sizeof(char) * (64));
+	sFiles.vertFile = (char *)malloc(sizeof(char) * (64));
+	memcpy(sFiles.vertFile, "Source\\TerrainNormalsVert.txt", sizeof(char) * (64));
+	memcpy(sFiles.geomFile, "Source\\TerrainNormalsGeo.txt", sizeof(char) * (64));
+	memcpy(sFiles.fragFile, "Source\\TerrainNormalsFrag.txt", sizeof(char) * (64));
+	LoadShader(&m_normalsShader, sFiles);
+
+	m_normalsModelMatLoc = glGetUniformLocation(m_normalsShader.ProgramId, "ModelMatrix");
+	m_normalsViewMatLoc = glGetUniformLocation(m_normalsShader.ProgramId, "ViewMatrix");
+	m_normalsProjMatLoc = glGetUniformLocation(m_normalsShader.ProgramId, "ProjectionMatrix");
+	printOpenGLError();
+
+	free(sFiles.vertFile);
+	free(sFiles.geomFile);
+	free(sFiles.fragFile);
+}
+
 void Terrain::CreateShaders()
 {
 	CreateTerrainShader();
+	CreateNormalShader();
 }
 
 void Terrain::DestroyShaders()
 {
+	glDetachShader(m_normalsShader.ProgramId, m_normalsShader.FragmentShaderId);
+	glDetachShader(m_normalsShader.ProgramId, m_normalsShader.GeometryShaderId);
+	glDetachShader(m_normalsShader.ProgramId, m_normalsShader.VertexShaderId);
+	printOpenGLError();
+
 	glDetachShader(m_terrainShader.ProgramId, m_terrainShader.FragmentShaderId);
 	glDetachShader(m_terrainShader.ProgramId, m_terrainShader.VertexShaderId);
+	printOpenGLError();
+
+	glDeleteShader(m_normalsShader.FragmentShaderId);
+	glDeleteShader(m_normalsShader.GeometryShaderId);
+	glDeleteShader(m_normalsShader.VertexShaderId);
 	printOpenGLError();
 
 	glDeleteShader(m_terrainShader.FragmentShaderId);
@@ -186,10 +211,16 @@ void Terrain::DestroyShaders()
 void Terrain::DestroyVBO()
 {
 	UnbindForRender();
-	glDeleteBuffers(1, &m_txbo);
+	glDeleteBuffers(1, &m_normalsShader.IndexBufferId);
+	glDeleteBuffers(1, &m_normalsShader.VboId);
+	glDeleteVertexArrays(1, &m_normalsShader.VaoId);
+
+	glDeleteBuffers(1, &m_heightmapTxbo);
+
 	glDeleteBuffers(1, &m_terrainShader.IndexBufferId);
 	glDeleteBuffers(1, &m_terrainShader.VboId);
 	glDeleteVertexArrays(1, &m_terrainShader.VaoId);
+
 	printOpenGLError();
 }
 
@@ -208,10 +239,8 @@ int Terrain::IndicesCount()
 	return TriCount() * 3;
 }
 
-
-void Terrain::Render()
+void Terrain::RenderTerrain()
 {
-
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
@@ -219,13 +248,37 @@ void Terrain::Render()
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 
-	BindForRender();
+	BindTerrainForRender();
 	glDrawElements(GL_TRIANGLES, IndicesCount(), GL_UNSIGNED_INT, (GLvoid*)0);
 	UnbindForRender();
 
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
 	printOpenGLError();
+}
+
+void Terrain::RenderNormals()
+{
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+
+	BindNormalsForRender();
+	glDrawElements(GL_TRIANGLES, IndicesCount(), GL_UNSIGNED_INT, (GLvoid*)0);
+	UnbindForRender();
+
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+	printOpenGLError();
+}
+
+void Terrain::Render()
+{
+	RenderTerrain();
+	//RenderNormals();
 }
 
 glm::mat4 Terrain::GetModelMat()
@@ -236,8 +289,27 @@ glm::mat4 Terrain::GetModelMat()
 	return 	glm::scale(retval, scaler);
 }
 
+void Terrain::BindNormalsForRender()
+{
+	// use the shader
+	glUseProgram(m_normalsShader.ProgramId);
+	printOpenGLError();
 
-void Terrain::BindForRender()
+
+	Simulation *sim = Simulation::GetSimulation();
+
+	// Buffer the matrices
+	glUniformMatrix4fv(m_normalsModelMatLoc, 1, GL_FALSE, &(GetModelMat())[0][0] );
+	// THIS NEEDS TO BE VIEW MATRIX
+	glUniformMatrix4fv(m_normalsViewMatLoc, 1, GL_FALSE, &(sim->GetViewMat())[0][0]);
+	// Then get the perspective matrix
+	glUniformMatrix4fv(m_normalsProjMatLoc, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
+
+	// bind the vertex array
+	glBindVertexArray(m_normalsShader.VaoId);
+}
+
+void Terrain::BindTerrainForRender()
 {
 	// use the shader
 	glUseProgram(m_terrainShader.ProgramId);
@@ -247,11 +319,11 @@ void Terrain::BindForRender()
 	Simulation *sim = Simulation::GetSimulation();
 
 	// Buffer the matrices
-	glUniformMatrix4fv(ModelMatrixUniformLocation, 1, GL_FALSE, &(GetModelMat())[0][0] );
+	glUniformMatrix4fv(m_terrainModelMatLoc, 1, GL_FALSE, &(GetModelMat())[0][0] );
 	// THIS NEEDS TO BE VIEW MATRIX
-	glUniformMatrix4fv(ViewMatrixUniformLocation, 1, GL_FALSE, &(sim->GetViewMat())[0][0]);
+	glUniformMatrix4fv(m_terrainViewMatLoc, 1, GL_FALSE, &(sim->GetViewMat())[0][0]);
 	// Then get the perspective matrix
-	glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
+	glUniformMatrix4fv(m_terrainProjMatLoc, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
 
 	// bind the vertex array
 	glBindVertexArray(m_terrainShader.VaoId);
@@ -467,6 +539,20 @@ void Terrain::SmoothVertices()
 			}
 			avgHeight /= vertCnt;
 			m_vertices[idx].y = avgHeight;
+		}
+	}
+}
+
+void Terrain::InitNormals()
+{
+	//m_vertNormals
+	int idx = -1;
+	for(uint32_t j=0; j<m_vertResolution.y; ++j)
+	{
+		for(uint32_t i=0; i<m_vertResolution.y; ++i)
+		{
+			idx = i * m_vertResolution.x + j;
+			m_vertNormals[idx] = glm::vec3(0,1,0);
 		}
 	}
 }

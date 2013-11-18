@@ -95,7 +95,8 @@ protected:
 	virtual void		CreateShaders(void);
 	virtual void		DestroyVBO(void);
 	virtual void		DestroyShaders(void);
-	void				BindForRender();
+	void				BindTerrainForRender();
+	void				BindNormalsForRender();
 	void				UnbindForRender();
 	int					TriCount();
 	int					VerticesCnt();
@@ -106,10 +107,14 @@ protected:
 	void				GetHeightData();
 	void				SmoothVertices();
 	void				CreateNormalsVBO();
+	void				CreateNormalShader();
 	void				CreateTerrainShader();
 	void				CreateTerrainVBO();
 	void				InitTriVertices();
 	void				InitTriIndices();
+	void				RenderTerrain();
+	void				RenderNormals();
+	void				InitNormals();
 private:
 	
 
@@ -123,15 +128,18 @@ private:
 	glm::vec4	m_position;
 	GLuint		m_testTex;
 	GLuint		m_heightmap1;
-	GLuint		m_txbo;
+	GLuint		m_heightmapTxbo;
 	glm::vec3	m_modelScale;
 	glm::vec2	m_scaler;
 	ShaderInfo	m_terrainShader;
 	ShaderInfo	m_normalsShader;
 
 	GLuint
-		ProjectionMatrixUniformLocation,
-		ViewMatrixUniformLocation,
-		ModelMatrixUniformLocation,
-		m_texLocation;
+		m_terrainProjMatLoc,
+		m_terrainViewMatLoc,
+		m_terrainModelMatLoc,
+		m_terrainHeightmapLoc,
+		m_normalsProjMatLoc,
+		m_normalsViewMatLoc,
+		m_normalsModelMatLoc;
 };
