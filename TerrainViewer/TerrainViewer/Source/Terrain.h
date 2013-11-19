@@ -8,11 +8,12 @@ class Terrain : public RenderObjBase
 public:
 	Terrain() : RenderObjBase()
 	{
-		m_position = glm::vec4(0,0,0,1);
-		m_modelScale = glm::vec3(20, 2, 20);
-		m_scaler =  glm::vec2( 15000, 15000.f);
-		m_faceResolution = glm::uvec2(256,256);
-		m_vertResolution = m_faceResolution + glm::uvec2(1,1);
+		m_renderNormals		= false;
+		m_position			= glm::vec4(0,0,0,1);
+		m_modelScale		= glm::vec3(20, 2, 20);
+		m_scaler			=  glm::vec2( 15000, 15000.f);
+		m_faceResolution	= glm::uvec2(256,256);
+		m_vertResolution	= m_faceResolution + glm::uvec2(1,1);
 
 		m_vertices = (glm::vec4*)malloc(sizeof(glm::vec4) * VerticesCnt() );
 		if(m_vertices == NULL)
@@ -89,6 +90,7 @@ public:
 	void				Setup();
 	void				Cleanup();
 	glm::vec2*			GetScale() {return &m_scaler;}
+	void				Update( float _dt );
 
 protected:
 	virtual void		CreateVBO(void);
@@ -133,6 +135,7 @@ private:
 	glm::vec2	m_scaler;
 	ShaderInfo	m_terrainShader;
 	ShaderInfo	m_normalsShader;
+	bool		m_renderNormals;
 
 	GLuint
 		m_terrainProjMatLoc,

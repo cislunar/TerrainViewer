@@ -2,8 +2,20 @@
 #include "Simulation.h"
 #include <stdint.h>
 
+
+Simulation* m_sim = NULL;
+void Terrain::Update( float _dt )
+{
+	if(m_sim->GetOnKeyDown(SDLK_n))
+	{
+		m_renderNormals = !m_renderNormals;
+	}
+}
+
+
 void Terrain::Setup()
 {
+	m_sim = Simulation::GetSimulation();
 	m_heightmap1 = LoadImage("Source\\HeightMap2.bmp");
 	GetHeightData();
 	InitTriVertices();
@@ -32,8 +44,7 @@ void Terrain::CreateNormalsVBO()
 	// Enables vertex shader attributes for use
 	glEnableVertexAttribArray(0);
 
-	// creates a buffer object to transfer vertices data to vertex array
-	// then buffers the data
+	// buffer vertex data to shader
 	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
 	glBufferData(	GL_ARRAY_BUFFER, 
 		sizeof(glm::vec4) * m_vertResolution.x * m_vertResolution.y, 
@@ -59,7 +70,7 @@ void Terrain::CreateNormalsVBO()
 	printOpenGLError();
 
 	// defines the data we just transferred to the gpu
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	printOpenGLError();
 
 	// Determines the draw order of the vertices we transferred to gpu
@@ -278,7 +289,10 @@ void Terrain::RenderNormals()
 void Terrain::Render()
 {
 	RenderTerrain();
-	//RenderNormals();
+	if(m_renderNormals)
+	{
+		RenderNormals();
+	}
 }
 
 glm::mat4 Terrain::GetModelMat()
