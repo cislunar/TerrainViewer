@@ -8,9 +8,10 @@ class Terrain : public RenderObjBase
 public:
 	Terrain() : RenderObjBase()
 	{
+		m_heightScaler		 = 0.1f;
 		m_renderNormals		= false;
 		m_position			= glm::vec4(0,0,0,1);
-		m_modelScale		= glm::vec3(20, 2, 20);
+		m_modelScale		= glm::vec3(20, 20, 20);
 		m_scaler			=  glm::vec2( 15000, 15000.f);
 		m_faceResolution	= glm::uvec2(256,256);
 		m_vertResolution	= m_faceResolution + glm::uvec2(1,1);
@@ -119,7 +120,7 @@ protected:
 	void				InitNormals();
 private:
 	
-
+	float		m_heightScaler;
 	glm::vec4*	m_vertices;
 	GLuint*		m_indices; 
 	float*		m_heightData;

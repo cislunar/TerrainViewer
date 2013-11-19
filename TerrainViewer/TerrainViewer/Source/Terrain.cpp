@@ -448,7 +448,7 @@ void Terrain::GetHeightData()
 			coords.x = x/(m_vertResolution.x-1.f);
 			texSample = SampleTexture_Linear(coords, &rawTexData);
 			// Values are going to be in range of [0-255], need to make them in range of [0-1]
-			m_heightData[y * m_vertResolution.x + x] = texSample.x / 255.f;
+			m_heightData[y * m_vertResolution.x + x] = (texSample.x / 255.f) * m_heightScaler;
 		}
 	}
 }
@@ -474,7 +474,6 @@ void Terrain::InitTriVertices()
 		{
 			idx = i * m_vertResolution.x + j;
 			m_vertices[idx] = glm::vec4(xPos, m_heightData[idx], zPos, 1.f);
-			//m_vertices[idx] = glm::vec4(xPos, 0.f, zPos, 1.f);
 			xPos+=wInc;
 
 			m_texCoords[idx] = glm::vec2(texXPos, texYPos);
@@ -488,6 +487,7 @@ void Terrain::InitTriVertices()
 	}
 	SmoothVertices();
 }
+
 void Terrain::SmoothVertices()
 {
 	//###########################################################
@@ -560,13 +560,72 @@ void Terrain::SmoothVertices()
 void Terrain::InitNormals()
 {
 	//m_vertNormals
-	int idx = -1;
-	for(uint32_t j=0; j<m_vertResolution.y; ++j)
+	int idx = -1,
+		v1Idx = -1,
+		v2Idx = -1;
+	glm::vec3	normal,
+				eastWest,
+				southNorth,
+				v1,
+				v2;
+	for(uint32_t i=0; i<m_vertResolution.y; ++i)
 	{
-		for(uint32_t i=0; i<m_vertResolution.y; ++i)
+		for(uint32_t j=0; j<m_vertResolution.y; ++j)
 		{
 			idx = i * m_vertResolution.x + j;
-			m_vertNormals[idx] = glm::vec3(0,1,0);
+			// Reset variables
+			normal = glm::vec3();
+			v1Idx = v2Idx = idx;
+
+			// Get west vertex
+			if(j > 0)
+			{
+				v1Idx = i * m_vertResolution.x + (j-1);
+			}
+			v1 = glm::vec3(m_vertices[v1Idx].xyz());
+
+			// Get west vertex
+			if(j < m_vertResolution.x - 1)
+			{
+				v2Idx = i * m_vertResolution.x + (j+1);
+			}
+			v2 = glm::vec3(m_vertices[v2Idx].xyz());
+
+ 			eastWest = v1 - v2;
+			eastWest = glm::normalize(eastWest);
+
+			// Get North vertex
+			if(i > 0)
+			{
+				v1Idx = (i-1)* m_vertResolution.x + j;
+			}
+			v1 = glm::vec3(m_vertices[v1Idx].xyz());
+
+			// Get South vertex
+			if(i < m_vertResolution.y - 1)
+			{
+				v2Idx = (i+1)* m_vertResolution.x + j;
+			}
+			v2 = glm::vec3(m_vertices[v2Idx].xyz());
+			southNorth = v1 - v2;
+			southNorth = glm::normalize(southNorth);
+
+			normal = glm::cross(eastWest, southNorth);
+			normal = glm::normalize(normal);
+			if(normal.x == -0)
+			{
+				normal.x = 0;
+			}
+			if(normal.y == -0)
+			{
+				normal.y = 0;
+			}
+			if(normal.z == -0)
+			{
+				normal.z = 0;
+			}
+			
+			m_vertNormals[idx] = normal;
 		}
 	}
 }
