@@ -61,7 +61,6 @@ void Terrain::CreateNormalsVBO()
 
 	// creates a buffer object to transfer normals data to normals array
 	// then buffers the data
-	glGenBuffers(1, &m_normalsShader.VboId);
 	glBindBuffer(GL_ARRAY_BUFFER, m_normalsShader.VboId);
 	glBufferData(	GL_ARRAY_BUFFER, 
 		sizeof(glm::vec3) * m_vertResolution.x * m_vertResolution.y, 
@@ -110,10 +109,23 @@ void Terrain::CreateTerrainVBO()
 	printOpenGLError();
 
 	// Enables vertex shader attribute for use
+	// specifically, normals
 	glEnableVertexAttribArray(1);
 
+	glGenBuffers(1, &m_normalsShader.VboId);
+	glBindBuffer(GL_ARRAY_BUFFER, m_normalsShader.VboId);
+	glBufferData(	GL_ARRAY_BUFFER, 
+		sizeof(glm::vec3) * m_vertResolution.x * m_vertResolution.y, 
+		m_vertNormals, 
+		GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// defines the data we just transferred to the gpu
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
+
 	// Create and bind texture buffer object
-	glGenBuffers(1, &m_heightmapTxbo);
+	/*glGenBuffers(1, &m_heightmapTxbo);
 
 	// Get texture uv location and upload
 	glBindBuffer(GL_ARRAY_BUFFER, m_heightmapTxbo);
@@ -122,7 +134,7 @@ void Terrain::CreateTerrainVBO()
 		m_texCoords, 
 		GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-	printOpenGLError();
+	printOpenGLError();*/
 
 	// Determines the draw order of the vertices we transferred to gpu
 	glGenBuffers(1, &m_terrainShader.IndexBufferId);
