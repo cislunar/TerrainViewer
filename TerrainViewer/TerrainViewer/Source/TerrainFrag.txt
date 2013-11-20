@@ -1,11 +1,4 @@
 #version 400
-
-out vec4 out_Color;
-
-// In data
-in vec3 vertNormal;
-in vec3 halfDir;
-
 struct DirectionalLight
 {
 	vec3 color;
@@ -14,22 +7,53 @@ struct DirectionalLight
 	float diffuseIntensity;
 };
 
+// Out data
+out vec4 out_Color;
 
+// In data
+smooth in vec3 vertNormal;
+smooth in vec3 halfDir;
 in DirectionalLight light;
 
-void main(void)
+vec4 BlinnPhongColor( vec3 norm, vec3 halfV )
 {
-    
 	vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1);
 	vec4 diffuseColor = vec4(0,0,0,0);
 
-	float diffuseFactor = max( dot(vertNormal, -light.dir), 0.0f);
+	float diffuseFactor = dot(norm, normalize(-light.dir));
+	if( diffuseFactor > 0)
+	{
+		diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
+	}
+
+	float nDotH = max(dot(norm, halfV),0.0f);
+
+	// Second value is the hard-coded value for the material's shininess factor
+	float specColor = pow(nDotH, 500.f);
+
+	vec4 retColor = diffuseColor;//vec4(.5,.5,.5,1) * specColor + ambientColor + diffuseColor;
+	return retColor;
+}
+
+vec4 PhongColor( vec3 norm )
+{
+	vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1);
+	vec4 diffuseColor = vec4(0,0,0,0);
+
+	float diffuseFactor = max( dot(norm, normalize(-light.dir)), 0.0f);
 	diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
 
-	float nDotH = max(dot(vertNormal, halfDir),0.0f);
+	vec4 retColor = diffuseColor + ambientColor;
 
-	// 10.f is the hard-coded value for the material's shininess factor
-	float specColor = pow(nDotH, 1000.f);
+	return clamp(retColor, 0.0, 1.0);
+}
 
-	out_Color = vec4(1,1,1,1) * specColor + ambientColor + diffuseColor;//+ specColor;
+void main(void)
+{
+	vec3 newNorm = normalize(vertNormal);
+	vec3 newHalfV = normalize(halfDir);
+    out_Color = BlinnPhongColor( newNorm, newHalfV );
+	//out_Color = PhongColor( newNorm );
+	//Render normals of each frag via color
+	//out_Color = vec4((newNorm + vec3(1,1,1)) * .5, 1);
 }

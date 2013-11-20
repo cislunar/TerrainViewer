@@ -13,7 +13,7 @@ public:
 		m_position			= glm::vec4(0,0,0,1);
 		m_modelScale		= glm::vec3(20, 20, 20);
 		m_scaler			=  glm::vec2( 15000, 15000.f);
-		m_faceResolution	= glm::uvec2(512,512);
+		m_faceResolution	= glm::uvec2(1024,1024);
 		m_vertResolution	= m_faceResolution + glm::uvec2(1,1);
 
 		m_vertices = (glm::vec4*)malloc(sizeof(glm::vec4) * VerticesCnt() );

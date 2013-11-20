@@ -18,9 +18,9 @@ struct DirectionalLight
 };
 
 // Out data
-out vec3 vertNormal;
-out DirectionalLight light;
-out vec3 halfDir;
+smooth out vec3 vertNormal;
+smooth out DirectionalLight light;
+smooth out vec3 halfDir;
 
 // Using the blinn-phong model for lighting calculations
 // Major difference between blinn-phong and phong is that we don't calculate a
@@ -31,17 +31,16 @@ vec4 eyeSpaceVertPos;
 void main(void)
 {
 	light.color = vec3(1,1,1);
-	light.ambientIntensity = .2f;
+	light.ambientIntensity = .4f;
 	light.dir = vec3(0, -.5, 1);
 	light.dir = normalize(light.dir);
-	light.diffuseIntensity = .5f;
-	// Ask Mark about this bullshit
-	//light.dir = (ViewMatrix * ModelMatrix * vec4(light.dir, 0.0f)).xyz;
+	light.diffuseIntensity = .7f;
 	light.dir = normalize(light.dir);
 
 	vertNormal = normalize(NormalsMatrix * in_normal);
 	
 	eyeSpaceVertPos = ViewMatrix * ModelMatrix * in_Position;
+
 	// The half dir is calculated as follows:
 	// light dir + eye dir. To calculate eye dir, we merely negate
 	// the current vertex pos in eye space.

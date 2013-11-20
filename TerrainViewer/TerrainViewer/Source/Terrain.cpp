@@ -513,8 +513,6 @@ void Terrain::SmoothVertices()
 {
 	//###########################################################
 	// Now we average the positions so that the terrain is smooth
-	// NOTE: This should be done after the heights have been extracted
-	// NOTE2: This should only average the HEIGHTS
 	uint32_t ii = 0;
 	uint32_t jj = 0;
 	float avgHeight = 0;
@@ -529,7 +527,7 @@ void Terrain::SmoothVertices()
 			idx = i * m_vertResolution.x + j;
 
 			// Reset variables
-			avgHeight = m_vertices[idx].y;
+			avgHeight = m_heightData[idx];
 			vertCnt = 1; // We use 1 because we always have at least 1 vertex in the avg, THIS VERTEX
 			oIdx = 0;
 
@@ -539,7 +537,7 @@ void Terrain::SmoothVertices()
 				jj = j-1;
 				ii = i;
 				oIdx = ii * m_vertResolution.x + jj;
-				avgHeight += m_vertices[oIdx].y;
+				avgHeight += m_heightData[oIdx];
 				vertCnt++;
 			}
 
@@ -549,7 +547,7 @@ void Terrain::SmoothVertices()
 				jj = j;
 				ii = i-1;
 				oIdx = ii * m_vertResolution.x + jj;
-				avgHeight += m_vertices[oIdx].y;
+				avgHeight += m_heightData[oIdx];
 				vertCnt++;
 			}
 
@@ -559,7 +557,7 @@ void Terrain::SmoothVertices()
 				jj = j+1;
 				ii = i;
 				oIdx = ii * m_vertResolution.x + jj;
-				avgHeight += m_vertices[oIdx].y;
+				avgHeight += m_heightData[oIdx];
 				vertCnt++;
 			}
 
@@ -569,7 +567,7 @@ void Terrain::SmoothVertices()
 				jj = j;
 				ii = i+1;
 				oIdx = ii * m_vertResolution.x + jj;
-				avgHeight += m_vertices[oIdx].y;
+				avgHeight += m_heightData[oIdx];
 				vertCnt++;
 			}
 			avgHeight /= vertCnt;
