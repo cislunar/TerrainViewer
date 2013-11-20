@@ -7,10 +7,47 @@ layout(location=1) in vec3 in_normal;
 uniform mat4 ModelMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ProjectionMatrix;
+uniform mat3 NormalsMatrix;
 
-vec4 newPos;
+struct DirectionalLight
+{
+	vec3 color;
+	float ambientIntensity;
+	vec3 dir;
+	float diffuseIntensity;
+};
+
+// Out data
+out vec3 vertNormal;
+out DirectionalLight light;
+out vec3 halfDir;
+out float nDotL;
+
+// Using the blinn-phong model for lighting calculations
+// Major difference between blinn-phong and phong is that we don't calculate a
+// reflection vector, only the half vector between the eye and the light.
+// Then we use that half vector in place of the reflection vector.
+
+vec4 eyeSpaceVertPos;
 void main(void)
 {
-	newPos = in_Position;
-    gl_Position = (ProjectionMatrix * ViewMatrix * ModelMatrix) * newPos;
+	light.color = vec3(1,1,1);
+	light.ambientIntensity = .2f;
+	light.dir = vec3(0, -1, 1);
+	light.dir = normalize(light.dir);
+	light.diffuseIntensity = .5f;
+	light.dir = (ViewMatrix * ModelMatrix * vec4(light.dir, 0.0f)).xyz;
+	light.dir = normalize(light.dir);
+
+	vertNormal = normalize(NormalsMatrix * in_normal);
+	nDotL = dot(vertNormal, -light.dir);
+	
+	eyeSpaceVertPos = ViewMatrix * ModelMatrix * in_Position;
+	// The half dir is calculated as follows:
+	// light dir + eye dir. To calculate eye dir, we merely negate
+	// the current vertex pos in eye space.
+	// Since eye pos is (0,0,0) in eye space, that's all we need!
+	halfDir = normalize(light.dir + normalize(-eyeSpaceVertPos));
+
+    gl_Position = (ProjectionMatrix ) * eyeSpaceVertPos;
 }

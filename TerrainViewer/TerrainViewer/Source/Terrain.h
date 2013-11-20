@@ -13,7 +13,7 @@ public:
 		m_position			= glm::vec4(0,0,0,1);
 		m_modelScale		= glm::vec3(20, 20, 20);
 		m_scaler			=  glm::vec2( 15000, 15000.f);
-		m_faceResolution	= glm::uvec2(256,256);
+		m_faceResolution	= glm::uvec2(512,512);
 		m_vertResolution	= m_faceResolution + glm::uvec2(1,1);
 
 		m_vertices = (glm::vec4*)malloc(sizeof(glm::vec4) * VerticesCnt() );
@@ -118,6 +118,7 @@ protected:
 	void				RenderTerrain();
 	void				RenderNormals();
 	void				InitNormals();
+	glm::mat3			GetNormalsMatrix();
 private:
 	
 	float		m_heightScaler;
@@ -142,6 +143,7 @@ private:
 		m_terrainProjMatLoc,
 		m_terrainViewMatLoc,
 		m_terrainModelMatLoc,
+		m_terrainNormalsMatLoc,
 		m_terrainHeightmapLoc,
 		m_normalsProjMatLoc,
 		m_normalsViewMatLoc,

@@ -173,6 +173,7 @@ void Terrain::CreateTerrainShader()
 	m_terrainModelMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ModelMatrix");
 	m_terrainViewMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ViewMatrix");
 	m_terrainProjMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ProjectionMatrix");
+	m_terrainNormalsMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "NormalsMatrix");
 	printOpenGLError();
 
 	free(sFiles.fragFile);
@@ -335,6 +336,14 @@ void Terrain::BindNormalsForRender()
 	glBindVertexArray(m_normalsShader.VaoId);
 }
 
+glm::mat3 Terrain::GetNormalsMatrix()
+{
+	glm::mat3 retval = glm::mat3();
+	glm::mat4 viewModel = m_sim->GetViewMat() * GetModelMat();
+	retval = glm::inverseTranspose(glm::mat3(retval));
+	return retval;
+}
+
 void Terrain::BindTerrainForRender()
 {
 	// use the shader
@@ -342,14 +351,14 @@ void Terrain::BindTerrainForRender()
 	printOpenGLError();
 
 
-	Simulation *sim = Simulation::GetSimulation();
-
 	// Buffer the matrices
 	glUniformMatrix4fv(m_terrainModelMatLoc, 1, GL_FALSE, &(GetModelMat())[0][0] );
 	// THIS NEEDS TO BE VIEW MATRIX
-	glUniformMatrix4fv(m_terrainViewMatLoc, 1, GL_FALSE, &(sim->GetViewMat())[0][0]);
+	glUniformMatrix4fv(m_terrainViewMatLoc, 1, GL_FALSE, &(m_sim->GetViewMat())[0][0]);
 	// Then get the perspective matrix
-	glUniformMatrix4fv(m_terrainProjMatLoc, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
+	glUniformMatrix4fv(m_terrainProjMatLoc, 1, GL_FALSE, &(m_sim->GetProjMat())[0][0]);
+	// Then buffer the normals matrix m_terrainNormalsMatLoc
+	glUniformMatrix3fv(m_terrainNormalsMatLoc, 1, GL_FALSE, &(GetNormalsMatrix())[0][0]);
 
 	// bind the vertex array
 	glBindVertexArray(m_terrainShader.VaoId);
