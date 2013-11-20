@@ -4,7 +4,6 @@ out vec4 out_Color;
 
 // In data
 in vec3 vertNormal;
-in float nDotL;
 in vec3 halfDir;
 
 struct DirectionalLight
@@ -24,14 +23,13 @@ void main(void)
 	vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1);
 	vec4 diffuseColor = vec4(0,0,0,0);
 
-	float diffuseFactor = nDotL;
-	diffuseFactor = diffuseFactor <= 0 ? diffuseFactor = 0 : diffuseFactor;
+	float diffuseFactor = max( dot(vertNormal, -light.dir), 0.0f);
 	diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
 
 	float nDotH = max(dot(vertNormal, halfDir),0.0f);
 
 	// 10.f is the hard-coded value for the material's shininess factor
-	float specColor = pow(nDotH, 10.f);
+	float specColor = pow(nDotH, 1000.f);
 
-	out_Color = ambientColor + diffuseColor;//vec4(1,1,1,1) * specColor + ambientColor + diffuseColor;//+ specColor;
+	out_Color = vec4(1,1,1,1) * specColor + ambientColor + diffuseColor;//+ specColor;
 }
