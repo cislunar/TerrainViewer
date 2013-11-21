@@ -28,7 +28,9 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV )
 	// Second value is the hard-coded value for the material's shininess factor
 	float specColor = pow(nDotH, 500.f);
 
-	vec4 retColor = diffuseColor;//vec4(.5,.5,.5,1) * specColor + ambientColor + diffuseColor;
+	vec4 retColor = vec4(.5,.5,.5,1) * specColor + ambientColor + diffuseColor;
+	//vec4 retColor = diffuseColor;
+	retColor = ambientColor;
 	return retColor;
 }
 
