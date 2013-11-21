@@ -57,7 +57,7 @@ void main(void)
 	// light dir + eye dir. To calculate eye dir, we merely negate
 	// the current vertex pos in eye space.
 	// Since eye pos is (0,0,0) in eye space, that's all we need!
-	halfDir = normalize(-light.dir + normalize(-eyeSpaceVertPos.xyz));
+	halfDir = normalize(-light.dir - normalize(-eyeSpaceVertPos.xyz));
 
     gl_Position = (ProjectionMatrix ) * eyeSpaceVertPos;
 }

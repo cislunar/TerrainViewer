@@ -15,10 +15,6 @@ void Terrain::Update( float _dt )
 	{
 		int renderState = (int) m_renderState;
 		renderState -= 1;
-		if( (RenderState)renderState == SPEC_RENDER_STATE)
-		{
-			renderState -= 1;
-		}
 
 		if(renderState < 0)
 		{
@@ -31,10 +27,6 @@ void Terrain::Update( float _dt )
 	{
 		int renderState = (int) m_renderState;
 		renderState += 1;
-		if( (RenderState)renderState == SPEC_RENDER_STATE)
-		{
-			renderState += 1;
-		}
 
 		if(renderState >= RENDER_STATE_COUNT)
 		{
@@ -271,16 +263,25 @@ void Terrain::SetupTerrainTextures()
 	m_grassTex		= LoadImage("Source\\grassTex1.jpg");
 
 	glBindTexture( GL_TEXTURE_2D, m_snowTex );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture( GL_TEXTURE_2D, m_rockFaceTex );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture( GL_TEXTURE_2D, m_grassTex );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glGenBuffers(1, &m_snowBo);
 	glGenBuffers(1, &m_rockFaceBo);
@@ -297,8 +298,8 @@ void Terrain::SetupTerrainTextures()
 	rockCoordOffsets = glm::vec2( 30.f / m_vertResolution.x,
 									30.f / m_vertResolution.y );
 
-	grassCoordOffsets = glm::vec2( 20.f / m_vertResolution.x,
-									20.f / m_vertResolution.y );
+	grassCoordOffsets = glm::vec2( 80.f / m_vertResolution.x,
+									80.f / m_vertResolution.y );
 
 	// Here, we set the texture coordinates.
 	// The plan is for these repeatable textures to repeat at different

@@ -34,13 +34,13 @@ uniform sampler2D rock;
 uniform sampler2D grass;
 
 
-vec4 BlinnPhongColor( vec3 norm, vec3 halfV )
+vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow )
 {
 	vec4 retColor = vec4(0,0,0,0);
 	if( renderState == 3
 		|| renderState == 0 )
 	{
-		vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1);
+		vec4 ambientColor = vec4(light.color * light.ambientIntensity, 0.0f);
 		retColor += ambientColor;
 	}
 
@@ -49,18 +49,21 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV )
 	{
 		vec4 diffuseColor = vec4(0,0,0,0);
 		float diffuseFactor = max(dot(norm, normalize(-light.dir)), 0.0);
-		diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
+		diffuseColor = vec4(light.color, 0) * light.diffuseIntensity * diffuseFactor;
 		retColor += diffuseColor;
 	}
 
 	if( renderState == 3
 		|| renderState == 2 )
 	{
-		float nDotH = max(dot(norm, halfV),0.0f);
+		if(_hasSnow)
+		{
+			float nDotH = max(dot(norm, halfV),0.0f);
 
-		// Second value is the hard-coded value for the material's shininess factor
-		float specColor = pow(nDotH, 500.f);
-		retColor += vec4(.5,.5,.5,1) * specColor;
+			// First value is the hard-coded value for the material's shininess factor
+			float specColor = pow(nDotH, 10.f);
+			retColor += vec4(vec3(.5f,.5f,.5f) * specColor, 0);
+		}
 	}
 	return retColor;
 }
@@ -78,7 +81,7 @@ vec4 PhongColor( vec3 norm )
 	return clamp(retColor, 0.0, 1.0);
 }
 
-vec4 TextureColors(float normY)
+vec4 TextureColors(float normY, inout bool _hasSnow)
 {
 	// .1f is a hardcoded hack. We should upload the max height in case we change it
 	float heightPct = defaultHeight / .1f;
@@ -101,19 +104,20 @@ vec4 TextureColors(float normY)
 		retColor = vec4(texture2D(rock, rockUV).rgb, 1.0f)
 						* rockIntensity;
 	}
+	_hasSnow = snowIntensity > 0 && rockIntensity == 0;
 	return retColor;
 }
 
+bool hasSnow = false;
 void main(void)
 {
 	vec3 newNorm = normalize(vertNormal);
 	vec3 newHalfV = normalize(halfDir);
-    out_Color = BlinnPhongColor( newNorm, newHalfV );
-	//out_Color = PhongColor( newNorm );
+	out_Color = TextureColors(newNorm.y, hasSnow);
+    out_Color *= BlinnPhongColor( newNorm, newHalfV, hasSnow );
 	if(renderState == 4)
 	{
 		//Render normals of each frag via color
 		out_Color = vec4((newNorm + vec3(1,1,1)) * .5, 1);
 	}
-	out_Color *= TextureColors(newNorm.y);
 }
