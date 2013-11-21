@@ -20,11 +20,8 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV )
 	vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1);
 	vec4 diffuseColor = vec4(0,0,0,0);
 
-	float diffuseFactor = dot(norm, normalize(-light.dir));
-	if( diffuseFactor > 0)
-	{
-		diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
-	}
+	float diffuseFactor = max(dot(norm, normalize(-light.dir)), 0.0);
+	diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
 
 	float nDotH = max(dot(norm, halfV),0.0f);
 
