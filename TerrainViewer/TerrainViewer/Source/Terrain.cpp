@@ -189,7 +189,7 @@ void Terrain::CreateTerrainVBO()
 	// Enable texCoord at loc 4
 	glEnableVertexAttribArray(4);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_rockFaceBo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_grassBo);
 	glBufferData(	GL_ARRAY_BUFFER, 
 					sizeof(glm::vec2) * m_vertResolution.x * m_vertResolution.y, 
 					m_grassTexCoords, 
@@ -266,9 +266,9 @@ void Terrain::CreateTerrainShader()
 
 void Terrain::SetupTerrainTextures()
 {
-	m_snowTex		= LoadImage("Source\\RedTest.bmp");
-	m_rockFaceTex	= LoadImage("Source\\GreenTest.bmp");
-	m_grassTex		= LoadImage("Source\\BlueTest.bmp");
+	m_snowTex		= LoadImage("Source\\snowTex.jpg");
+	m_rockFaceTex	= LoadImage("Source\\rockTex2.jpg");
+	m_grassTex		= LoadImage("Source\\grassTex1.jpg");
 
 	glBindTexture( GL_TEXTURE_2D, m_snowTex );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
@@ -291,14 +291,14 @@ void Terrain::SetupTerrainTextures()
 	glm::vec2 rockCoordOffsets;
 	glm::vec2 grassCoordOffsets;
 
-	snowCoordOffsets = glm::vec2( 200.f / m_vertResolution.x,
-									200.f / m_vertResolution.y );
+	snowCoordOffsets = glm::vec2( 20.f / m_vertResolution.x,
+									20.f / m_vertResolution.y );
 
-	rockCoordOffsets = glm::vec2( 400.f / m_vertResolution.x,
-									400.f / m_vertResolution.y );
+	rockCoordOffsets = glm::vec2( 30.f / m_vertResolution.x,
+									30.f / m_vertResolution.y );
 
-	grassCoordOffsets = glm::vec2( 600.f / m_vertResolution.x,
-									600.f / m_vertResolution.y );
+	grassCoordOffsets = glm::vec2( 20.f / m_vertResolution.x,
+									20.f / m_vertResolution.y );
 
 	// Here, we set the texture coordinates.
 	// The plan is for these repeatable textures to repeat at different
@@ -309,12 +309,12 @@ void Terrain::SetupTerrainTextures()
 		for(uint32_t j=0; j < m_vertResolution.x; ++j)
 		{
 			idx = i * m_vertResolution.x + j;
-			m_snowTexCoords[idx] = glm::vec2( snowCoordOffsets.x * m_vertResolution.x,
-											 snowCoordOffsets.y * m_vertResolution.y );
-			m_rockFaceTexCoords[idx] = glm::vec2( rockCoordOffsets.x * m_vertResolution.x,
-											 rockCoordOffsets.y * m_vertResolution.y );
-			m_grassTexCoords[idx] = glm::vec2( grassCoordOffsets.x * m_vertResolution.x,
-											 grassCoordOffsets.y * m_vertResolution.y );
+			m_snowTexCoords[idx] = glm::vec2( snowCoordOffsets.x * j,
+											 snowCoordOffsets.y * i );
+			m_rockFaceTexCoords[idx] = glm::vec2( rockCoordOffsets.x * j,
+											 rockCoordOffsets.y * i );
+			m_grassTexCoords[idx] = glm::vec2( grassCoordOffsets.x * j,
+											 grassCoordOffsets.y * i );
 		}
 	}
 }

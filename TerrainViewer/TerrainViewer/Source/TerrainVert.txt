@@ -27,6 +27,7 @@ smooth out vec3 halfDir;
 out vec2 snowUV;
 out vec2 rockUV;
 out vec2 grassUV;
+out float defaultHeight;
 
 // Using the blinn-phong model for lighting calculations
 // Major difference between blinn-phong and phong is that we don't calculate a
@@ -36,15 +37,16 @@ out vec2 grassUV;
 vec4 eyeSpaceVertPos;
 void main(void)
 {
+	defaultHeight = in_Position.y;
 	snowUV = snowCoords;
 	rockUV = rockCoords;
 	grassUV = grassCoords;
 
 	light.color = vec3(1,1,1);
-	light.ambientIntensity = .3f;
+	light.ambientIntensity = .6f;
 	light.dir = vec3(0, -.5, -1);
 	light.dir = normalize(light.dir);
-	light.diffuseIntensity = .6f;
+	light.diffuseIntensity = .8f;
 	light.dir = normalize(light.dir);
 
 	vertNormal = normalize(NormalsMatrix * in_normal);

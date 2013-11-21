@@ -11,6 +11,7 @@ struct DirectionalLight
 out vec4 out_Color;
 
 // In data
+in float defaultHeight;
 smooth in vec3 vertNormal;
 smooth in vec3 halfDir;
 in DirectionalLight light;
@@ -77,12 +78,29 @@ vec4 PhongColor( vec3 norm )
 	return clamp(retColor, 0.0, 1.0);
 }
 
-vec4 TextureColors()
+vec4 TextureColors(float normY)
 {
+	// .1f is a hardcoded hack. We should upload the max height in case we change it
+	float heightPct = defaultHeight / .1f;
 	vec4 retColor = vec4(0,0,0,0);
-	retColor += vec4(texture2D(snow, snowUV).rgb, 1.0f);
-	retColor += vec4(texture2D(rock, rockUV).rgb, 1.0f);
-	retColor += vec4(texture2D(grass, grassUV).rgb, 1.0f);
+
+	// snow color will be based on height
+	float snowIntensity = heightPct > .55f ? 1.0f : 0.0f;
+	retColor += vec4(texture2D(snow, snowUV).rgb, 1.0f)
+					* snowIntensity;
+
+	// grass color will be based on height
+	float grassIntensity = heightPct <= .55f ? 1.0f : 0.0f;
+	retColor += vec4(texture2D(grass, grassUV).rgb, 1.0f) 
+					* grassIntensity;
+
+	// rock color will be based on normal
+	float rockIntensity = normY < 0.91f ? 1.0f: 0.0f;
+	if( rockIntensity > 0)
+	{
+		retColor = vec4(texture2D(rock, rockUV).rgb, 1.0f)
+						* rockIntensity;
+	}
 	return retColor;
 }
 
@@ -97,5 +115,5 @@ void main(void)
 		//Render normals of each frag via color
 		out_Color = vec4((newNorm + vec3(1,1,1)) * .5, 1);
 	}
-	out_Color = TextureColors();
+	out_Color *= TextureColors(newNorm.y);
 }
