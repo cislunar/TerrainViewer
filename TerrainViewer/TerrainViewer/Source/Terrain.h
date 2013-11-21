@@ -6,9 +6,20 @@
 class Terrain : public RenderObjBase
 {
 public:
+	enum RenderState
+	{
+		AMBIENT_RENDER_STATE,
+		DIFFUSE_RENDER_STATE,
+		SPEC_RENDER_STATE,
+		PHONG_RENDER_STATE,
+		NORMALS_RENDER_STATE,
+		RENDER_STATE_COUNT
+	};
+
 	Terrain() : RenderObjBase()
 	{
-		m_heightScaler		 = 0.1f;
+		m_renderState		= PHONG_RENDER_STATE;
+		m_heightScaler		= 0.1f;
 		m_renderNormals		= false;
 		m_position			= glm::vec4(0,0,0,1);
 		m_modelScale		= glm::vec3(20, 20, 20);
@@ -51,6 +62,26 @@ public:
 		}
 		memset(m_heightData, 0, sizeof(float) * VerticesCnt() );
 
+		m_snowTexCoords = (glm::vec2*)malloc(sizeof(glm::vec2) * VerticesCnt() );
+		if(m_snowTexCoords == NULL)
+		{
+			fprintf(stderr, "out of memory\n");
+		}
+		memset(m_snowTexCoords, 0, sizeof(glm::vec2) * VerticesCnt() );
+
+		m_rockFaceTexCoords = (glm::vec2*)malloc(sizeof(glm::vec2) * VerticesCnt() );
+		if(m_rockFaceTexCoords == NULL)
+		{
+			fprintf(stderr, "out of memory\n");
+		}
+		memset(m_rockFaceTexCoords, 0, sizeof(glm::vec2) * VerticesCnt() );
+
+		m_grassTexCoords = (glm::vec2*)malloc(sizeof(glm::vec2) * VerticesCnt() );
+		if(m_grassTexCoords == NULL)
+		{
+			fprintf(stderr, "out of memory\n");
+		}
+		memset(m_grassTexCoords, 0, sizeof(glm::vec2) * VerticesCnt() );
 	}
 
 	~Terrain()
@@ -83,6 +114,24 @@ public:
 		{
 			free(m_heightData);
 			m_heightData = NULL;
+		}
+
+		if(m_snowTexCoords != NULL)
+		{
+			free(m_snowTexCoords);
+			m_snowTexCoords = NULL;
+		}
+
+		if(m_rockFaceTexCoords != NULL)
+		{
+			free(m_rockFaceTexCoords);
+			m_rockFaceTexCoords = NULL;
+		}
+
+		if(m_grassTexCoords != NULL)
+		{
+			free(m_grassTexCoords);
+			m_grassTexCoords = NULL;
 		}
 	}
 
@@ -119,6 +168,10 @@ protected:
 	void				RenderNormals();
 	void				InitNormals();
 	glm::mat3			GetNormalsMatrix();
+	void				SetupTerrainTextures();
+	void				CleanupTerrainTextures();
+	void				BindTexture( GLuint _tex, GLenum _texType, GLenum _texEnum,
+							int _texNum, GLuint _texLoc, ShaderInfo _shader );
 private:
 	
 	float		m_heightScaler;
@@ -138,6 +191,23 @@ private:
 	ShaderInfo	m_terrainShader;
 	ShaderInfo	m_normalsShader;
 	bool		m_renderNormals;
+	RenderState m_renderState;
+
+	glm::vec2	
+		*m_snowTexCoords,
+		*m_rockFaceTexCoords,
+		*m_grassTexCoords;
+
+	GLuint		
+		m_snowTex,
+		m_snowBo,
+		m_snowTexLoc,
+		m_rockFaceTex,
+		m_rockFaceBo,
+		m_rockFaceTexLoc,
+		m_grassTex,
+		m_grassBo,
+		m_grassTexLoc;
 
 	GLuint
 		m_terrainProjMatLoc,
@@ -145,6 +215,7 @@ private:
 		m_terrainModelMatLoc,
 		m_terrainNormalsMatLoc,
 		m_terrainHeightmapLoc,
+		m_terrainRenderStateLoc,
 		m_normalsProjMatLoc,
 		m_normalsViewMatLoc,
 		m_normalsModelMatLoc;

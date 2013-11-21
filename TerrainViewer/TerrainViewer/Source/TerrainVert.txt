@@ -3,6 +3,9 @@
 // Input data
 layout(location=0) in vec4 in_Position;
 layout(location=1) in vec3 in_normal;
+layout(location=2) in vec2 snowCoords;
+layout(location=3) in vec2 rockCoords;
+layout(location=4) in vec2 grassCoords;
 
 uniform mat4 ModelMatrix;
 uniform mat4 ViewMatrix;
@@ -21,6 +24,9 @@ struct DirectionalLight
 smooth out vec3 vertNormal;
 smooth out DirectionalLight light;
 smooth out vec3 halfDir;
+out vec2 snowUV;
+out vec2 rockUV;
+out vec2 grassUV;
 
 // Using the blinn-phong model for lighting calculations
 // Major difference between blinn-phong and phong is that we don't calculate a
@@ -30,6 +36,10 @@ smooth out vec3 halfDir;
 vec4 eyeSpaceVertPos;
 void main(void)
 {
+	snowUV = snowCoords;
+	rockUV = rockCoords;
+	grassUV = grassCoords;
+
 	light.color = vec3(1,1,1);
 	light.ambientIntensity = .3f;
 	light.dir = vec3(0, -.5, -1);

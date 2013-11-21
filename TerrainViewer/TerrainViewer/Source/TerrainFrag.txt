@@ -14,23 +14,53 @@ out vec4 out_Color;
 smooth in vec3 vertNormal;
 smooth in vec3 halfDir;
 in DirectionalLight light;
+in vec2 snowUV;
+in vec2 rockUV;
+in vec2 grassUV;
+
+//enum RenderState{
+//	AMBIENT_RENDER_STATE	= 0,
+//	DIFFUSE_RENDER_STATE	= 1,
+//	SPEC_RENDER_STATE		= 2,
+//	PHONG_RENDER_STATE		= 3,
+//	NORMALS_RENDER_STATE	= 4,
+//	RENDER_STATE_COUNT		= 5
+//};
+
+uniform int renderState;
+uniform sampler2D snow;
+uniform sampler2D rock;
+uniform sampler2D grass;
+
 
 vec4 BlinnPhongColor( vec3 norm, vec3 halfV )
 {
-	vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1);
-	vec4 diffuseColor = vec4(0,0,0,0);
+	vec4 retColor = vec4(0,0,0,0);
+	if( renderState == 3
+		|| renderState == 0 )
+	{
+		vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1);
+		retColor += ambientColor;
+	}
 
-	float diffuseFactor = max(dot(norm, normalize(-light.dir)), 0.0);
-	diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
+	if( renderState == 3
+		|| renderState == 1 )
+	{
+		vec4 diffuseColor = vec4(0,0,0,0);
+		float diffuseFactor = max(dot(norm, normalize(-light.dir)), 0.0);
+		diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
+		retColor += diffuseColor;
+	}
 
-	float nDotH = max(dot(norm, halfV),0.0f);
+	if( renderState == 3
+		|| renderState == 2 )
+	{
+		float nDotH = max(dot(norm, halfV),0.0f);
 
-	// Second value is the hard-coded value for the material's shininess factor
-	float specColor = pow(nDotH, 500.f);
-
-	vec4 retColor = vec4(.5,.5,.5,1) * specColor + ambientColor + diffuseColor;
-	//vec4 retColor = diffuseColor;
-	retColor = ambientColor;
+		// Second value is the hard-coded value for the material's shininess factor
+		float specColor = pow(nDotH, 500.f);
+		retColor += vec4(.5,.5,.5,1) * specColor;
+	}
 	return retColor;
 }
 
@@ -47,12 +77,25 @@ vec4 PhongColor( vec3 norm )
 	return clamp(retColor, 0.0, 1.0);
 }
 
+vec4 TextureColors()
+{
+	vec4 retColor = vec4(0,0,0,0);
+	retColor += vec4(texture2D(snow, snowUV).rgb, 1.0f);
+	retColor += vec4(texture2D(rock, rockUV).rgb, 1.0f);
+	retColor += vec4(texture2D(grass, grassUV).rgb, 1.0f);
+	return retColor;
+}
+
 void main(void)
 {
 	vec3 newNorm = normalize(vertNormal);
 	vec3 newHalfV = normalize(halfDir);
     out_Color = BlinnPhongColor( newNorm, newHalfV );
 	//out_Color = PhongColor( newNorm );
-	//Render normals of each frag via color
-	//out_Color = vec4((newNorm + vec3(1,1,1)) * .5, 1);
+	if(renderState == 4)
+	{
+		//Render normals of each frag via color
+		out_Color = vec4((newNorm + vec3(1,1,1)) * .5, 1);
+	}
+	out_Color = TextureColors();
 }

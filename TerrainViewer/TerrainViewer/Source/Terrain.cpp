@@ -10,6 +10,38 @@ void Terrain::Update( float _dt )
 	{
 		m_renderNormals = !m_renderNormals;
 	}
+
+	if(m_sim->GetOnKeyDown( SDLK_LEFTBRACKET ) )
+	{
+		int renderState = (int) m_renderState;
+		renderState -= 1;
+		if( (RenderState)renderState == SPEC_RENDER_STATE)
+		{
+			renderState -= 1;
+		}
+
+		if(renderState < 0)
+		{
+			renderState = (int)NORMALS_RENDER_STATE;
+		}
+		m_renderState = (RenderState)renderState;
+	}
+
+	if( m_sim->GetOnKeyDown( SDLK_RIGHTBRACKET ) )
+	{
+		int renderState = (int) m_renderState;
+		renderState += 1;
+		if( (RenderState)renderState == SPEC_RENDER_STATE)
+		{
+			renderState += 1;
+		}
+
+		if(renderState >= RENDER_STATE_COUNT)
+		{
+			renderState = AMBIENT_RENDER_STATE;
+		}
+		m_renderState = (RenderState)renderState;
+	}
 }
 
 
@@ -17,6 +49,7 @@ void Terrain::Setup()
 {
 	m_sim = Simulation::GetSimulation();
 	m_heightmap1 = LoadImage("Source\\HeightMap2.bmp");
+	SetupTerrainTextures();
 	GetHeightData();
 	InitTriVertices();
 	InitTriIndices();
@@ -30,6 +63,7 @@ void Terrain::Cleanup()
 {
 	RenderObjBase::Cleanup();
 	glDeleteTextures(1, &m_heightmap1);
+	
 }
 
 void Terrain::CreateNormalsVBO()
@@ -115,26 +149,56 @@ void Terrain::CreateTerrainVBO()
 	glGenBuffers(1, &m_normalsShader.VboId);
 	glBindBuffer(GL_ARRAY_BUFFER, m_normalsShader.VboId);
 	glBufferData(	GL_ARRAY_BUFFER, 
-		sizeof(glm::vec3) * m_vertResolution.x * m_vertResolution.y, 
-		m_vertNormals, 
-		GL_STATIC_DRAW);
+					sizeof(glm::vec3) * m_vertResolution.x * m_vertResolution.y, 
+					m_vertNormals, 
+					GL_STATIC_DRAW);
 	printOpenGLError();
 
 	// defines the data we just transferred to the gpu
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	printOpenGLError();
 
-	// Create and bind texture buffer object
-	/*glGenBuffers(1, &m_heightmapTxbo);
+	// Enable texCoord at loc 2
+	glEnableVertexAttribArray(2);
 
-	// Get texture uv location and upload
-	glBindBuffer(GL_ARRAY_BUFFER, m_heightmapTxbo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_snowBo);
 	glBufferData(	GL_ARRAY_BUFFER, 
-		sizeof(glm::vec2) * m_vertResolution.y * m_vertResolution.x, 
-		m_texCoords, 
-		GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-	printOpenGLError();*/
+					sizeof(glm::vec2) * m_vertResolution.x * m_vertResolution.y, 
+					m_snowTexCoords, 
+					GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// defines the data we just transferred to the gpu
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
+
+	// Enable texCoord at loc 3
+	glEnableVertexAttribArray(3);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_rockFaceBo);
+	glBufferData(	GL_ARRAY_BUFFER, 
+					sizeof(glm::vec2) * m_vertResolution.x * m_vertResolution.y, 
+					m_rockFaceTexCoords, 
+					GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// defines the data we just transferred to the gpu
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
+
+	// Enable texCoord at loc 4
+	glEnableVertexAttribArray(4);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_rockFaceBo);
+	glBufferData(	GL_ARRAY_BUFFER, 
+					sizeof(glm::vec2) * m_vertResolution.x * m_vertResolution.y, 
+					m_grassTexCoords, 
+					GL_STATIC_DRAW);
+	printOpenGLError();
+
+	// defines the data we just transferred to the gpu
+	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	printOpenGLError();
 
 	// Determines the draw order of the vertices we transferred to gpu
 	glGenBuffers(1, &m_terrainShader.IndexBufferId);
@@ -149,9 +213,28 @@ void Terrain::CreateTerrainVBO()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_heightmap1);	
 
+	// Get texture locations
+	m_snowTexLoc		= glGetUniformLocation(m_terrainShader.ProgramId, "snow");
+	m_rockFaceTexLoc	= glGetUniformLocation(m_terrainShader.ProgramId, "rock");
+	m_grassTexLoc		= glGetUniformLocation(m_terrainShader.ProgramId, "grass");
+
+	// Bind the textures
+	BindTexture(m_snowTex, GL_TEXTURE_2D, GL_TEXTURE0, 0, m_snowTexLoc, m_terrainShader);
+	BindTexture(m_rockFaceTex, GL_TEXTURE_2D, GL_TEXTURE1, 1, m_rockFaceTexLoc, m_terrainShader);
+	BindTexture(m_grassTex, GL_TEXTURE_2D, GL_TEXTURE2, 2, m_grassTexLoc, m_terrainShader);
+
 	// Detaches vertex array
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void Terrain::BindTexture( GLuint _tex, GLenum _texType, GLenum _texEnum, 
+							int _texNum, GLuint _texLoc, ShaderInfo _shader )
+{
+	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
+	glProgramUniform1i(_shader.ProgramId, _texLoc , _texNum);
+	glActiveTexture(_texEnum);
+	glBindTexture(_texType, _tex);	
 }
 
 void Terrain::CreateVBO()
@@ -174,10 +257,77 @@ void Terrain::CreateTerrainShader()
 	m_terrainViewMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ViewMatrix");
 	m_terrainProjMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ProjectionMatrix");
 	m_terrainNormalsMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "NormalsMatrix");
+	m_terrainRenderStateLoc = glGetUniformLocation(m_terrainShader.ProgramId, "renderState");
 	printOpenGLError();
 
 	free(sFiles.fragFile);
 	free(sFiles.vertFile);
+}
+
+void Terrain::SetupTerrainTextures()
+{
+	m_snowTex		= LoadImage("Source\\RedTest.bmp");
+	m_rockFaceTex	= LoadImage("Source\\GreenTest.bmp");
+	m_grassTex		= LoadImage("Source\\BlueTest.bmp");
+
+	glBindTexture( GL_TEXTURE_2D, m_snowTex );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+	glBindTexture( GL_TEXTURE_2D, m_rockFaceTex );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+	glBindTexture( GL_TEXTURE_2D, m_grassTex );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+
+	glGenBuffers(1, &m_snowBo);
+	glGenBuffers(1, &m_rockFaceBo);
+	glGenBuffers(1, &m_grassBo);
+
+
+	glm::vec2 snowCoordOffsets;
+	glm::vec2 rockCoordOffsets;
+	glm::vec2 grassCoordOffsets;
+
+	snowCoordOffsets = glm::vec2( 200.f / m_vertResolution.x,
+									200.f / m_vertResolution.y );
+
+	rockCoordOffsets = glm::vec2( 400.f / m_vertResolution.x,
+									400.f / m_vertResolution.y );
+
+	grassCoordOffsets = glm::vec2( 600.f / m_vertResolution.x,
+									600.f / m_vertResolution.y );
+
+	// Here, we set the texture coordinates.
+	// The plan is for these repeatable textures to repeat at different
+	// rates so we get more variance when we render them.
+	uint32_t idx = 0;
+	for(uint32_t i=0; i < m_vertResolution.y; ++i)
+	{
+		for(uint32_t j=0; j < m_vertResolution.x; ++j)
+		{
+			idx = i * m_vertResolution.x + j;
+			m_snowTexCoords[idx] = glm::vec2( snowCoordOffsets.x * m_vertResolution.x,
+											 snowCoordOffsets.y * m_vertResolution.y );
+			m_rockFaceTexCoords[idx] = glm::vec2( rockCoordOffsets.x * m_vertResolution.x,
+											 rockCoordOffsets.y * m_vertResolution.y );
+			m_grassTexCoords[idx] = glm::vec2( grassCoordOffsets.x * m_vertResolution.x,
+											 grassCoordOffsets.y * m_vertResolution.y );
+		}
+	}
+}
+
+void Terrain::CleanupTerrainTextures()
+{
+	glDeleteBuffers(1, &m_grassBo);
+	glDeleteBuffers(1, &m_rockFaceBo);
+	glDeleteBuffers(1, &m_snowBo);
+
+	glDeleteTextures(1, &m_rockFaceTex);
+	glDeleteTextures(1, &m_grassTex);
+	glDeleteTextures(1, &m_snowTex);
 }
 
 void Terrain::CreateNormalShader()
@@ -359,6 +509,8 @@ void Terrain::BindTerrainForRender()
 	glUniformMatrix4fv(m_terrainProjMatLoc, 1, GL_FALSE, &(m_sim->GetProjMat())[0][0]);
 	// Then buffer the normals matrix m_terrainNormalsMatLoc
 	glUniformMatrix3fv(m_terrainNormalsMatLoc, 1, GL_FALSE, &(GetNormalsMatrix())[0][0]);
+	// Buffer render state
+	glUniform1i(m_terrainRenderStateLoc, (int)m_renderState);
 
 	// bind the vertex array
 	glBindVertexArray(m_terrainShader.VaoId);
