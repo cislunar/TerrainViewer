@@ -5,11 +5,14 @@ class Obj3D : public RenderObjBase
 public:
 	Obj3D() : RenderObjBase()
 	{ 
-		position = glm::vec4(0,0,0,1);
-		m_scale = 1.0f;
+		m_position = glm::vec4(0,0,0,1);
+		m_scale = 1000.0f;
 	}
-	virtual void Render(void);
-	virtual glm::mat4 GetModelMat();
+	virtual void		Render(void);
+	virtual glm::mat4	GetModelMat();
+	void				SetPos( glm::vec3 _pos );
+	float*				GetScale(){return &m_scale;}
+	glm::vec4*			GetPos(){return &m_position;}
 
 protected:
 	virtual void CreateVBO(void);
@@ -19,7 +22,8 @@ protected:
 	void BindForRender();
 	void UnbindForRender();
 private:
-	glm::vec4 position;
+	glm::vec4 m_position;
+	glm::vec4 m_prevPos;
 	float m_scale;
 	GLuint
 		ProjectionMatrixUniformLocation,

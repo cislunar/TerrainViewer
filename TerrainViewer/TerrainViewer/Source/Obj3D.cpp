@@ -6,15 +6,15 @@ void Obj3D::CreateVBO()
 	Vertex cubeVerts[] =
 	{
 		// Front face, bot left CW
-		{ { -.5f, -.5f,  .5f, 1 }, { 0, 0, 1, 1 } },
-		{ { -.5f,  .5f,  .5f, 1 }, { 1, 0, 0, 1 } },
-		{ {  .5f,  .5f,  .5f, 1 }, { 0, 1, 0, 1 } },
-		{ {  .5f, -.5f,  .5f, 1 }, { 1, 1, 0, 1 } },
+		{ { -.5f, -.5f,  .5f, 1 }, { 1, 1, 1, 1 } },
+		{ { -.5f,  .5f,  .5f, 1 }, { 1, 1, 1, 1 } },
+		{ {  .5f,  .5f,  .5f, 1 }, { 1, 1, 1, 1 } },
+		{ {  .5f, -.5f,  .5f, 1 }, { 1, 1, 1, 1 } },
 		// Back, bot left clockwise
 		{ { -.5f, -.5f, -.5f, 1 }, { 1, 1, 1, 1 } },
-		{ { -.5f,  .5f, -.5f, 1 }, { 1, 0, 0, 1 } },
-		{ {  .5f,  .5f, -.5f, 1 }, { 1, 0, 1, 1 } },
-		{ {  .5f, -.5f, -.5f, 1 }, { 0, 0, 1, 1 } }
+		{ { -.5f,  .5f, -.5f, 1 }, { 1, 1, 1, 1 } },
+		{ {  .5f,  .5f, -.5f, 1 }, { 1, 1, 1, 1 } },
+		{ {  .5f, -.5f, -.5f, 1 }, { 1, 1, 1, 1 } }
 	};
 
 	// defines the order to draw vertices in
@@ -125,9 +125,16 @@ void Obj3D::Render()
 
 glm::mat4 Obj3D::GetModelMat()
 {
-	// Identity matrix times scale of this object
 	glm::mat4 retval = glm::mat4(1.0f);
-	return retval * m_scale;
+	glm::vec3 translate = m_position.xyz - m_prevPos.xyz;
+	retval = glm::translate(retval, translate );
+
+	// Identity matrix times scale of this object
+	glm::vec3 scaler = glm::vec3( m_scale, m_scale, m_scale );
+	retval = glm::scale(retval,  scaler);
+
+	
+	return retval;
 }
 
 
@@ -155,4 +162,10 @@ void Obj3D::UnbindForRender()
 {
 	glBindVertexArray(0);
 	glUseProgram(0);
+}
+
+void Obj3D::SetPos( glm::vec3 _pos )
+{
+	m_prevPos.xyz = m_position.xyz;
+	m_position.xyz = _pos;
 }

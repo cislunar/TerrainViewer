@@ -141,6 +141,7 @@ public:
 	void				Cleanup();
 	glm::vec2*			GetScale() {return &m_scaler;}
 	void				Update( float _dt );
+	glm::vec3			GetPos(){return m_position.xyz;}
 
 protected:
 	virtual void		CreateVBO(void);
