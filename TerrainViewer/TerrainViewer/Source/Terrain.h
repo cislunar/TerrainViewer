@@ -3,23 +3,6 @@
 #include <stdint.h>
 #include "TextureData.h"
 
-struct Triangle
-{
-	Triangle()
-	{
-		v1 = v2 = v3 = glm::vec3();
-	}
-	Triangle( glm::vec3 _v1, glm::vec3 _v2, glm::vec3 _v3 )
-	{
-		v1 = _v1; v2 = _v2; v3 = _v3;
-	}
-	glm::vec3 v1,v2,v3;
-	glm::vec3 GetNormal()
-	{
-		return glm::normalize( glm::cross(v2 - v1, v3 - v1));
-	}
-};
-
 class Terrain : public RenderObjBase
 {
 public:
@@ -194,7 +177,6 @@ protected:
 	void				CleanupTerrainTextures();
 	void				BindTexture( GLuint _tex, GLenum _texType, GLenum _texEnum,
 							int _texNum, GLuint _texLoc, ShaderInfo _shader );
-	Triangle			GetTriangleAtWorldPos( glm::vec3 _pos );
 
 private:
 	

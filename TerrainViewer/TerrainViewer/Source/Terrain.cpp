@@ -646,58 +646,18 @@ void Terrain::GetHeightData()
 	}
 }
 
-Triangle Terrain::GetTriangleAtWorldPos( glm::vec3 _pos )
-{
-	Triangle tri;
-	// Convert pos to local space
-	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _pos, 1.0f )).xyz;
-	// Convert range from [-.5,.5] to [0, 1]
-	posInLocalSpace.xz += glm::vec2(.5f, .5f);
-	// Convert to vertCoords
-	glm::vec2 vertCoords = posInLocalSpace.xz * glm::vec2(m_vertResolution.x, m_vertResolution.y);
-	// This trick round us to the closest whole number coordinate
-	glm::vec2 v1 = glm::vec2( floor(vertCoords.x + .5f), floor(vertCoords.y + .5f));
-
-	// Now we determine which other coordinates to check to get our tri
-	glm::vec2 v2, v3;
-	// If our first index is on the left of the grid
-	// or original point is closer to right
-	if( ((int)v1.x % (int)m_vertResolution.x) == 0 
-		|| vertCoords.x > v1.x )
-	{
-		//... we must go right
-		v3 = v1 + glm::vec2(1,0);
-	}
-	else
-	{
-		//... we must go left
-		v2 = v1 + glm::vec2(-1,0);
-	}
-
-	if( ((int)v1.y % (int)m_vertResolution.x) == 0 
-		|| vertCoords.x < v1.x  )
-	{
-
-	}
-	return tri;
-}
-
 float Terrain::GetHeightAtPos( glm::vec3 _pos )
 {
 	float retval = 0.f;
-	
+	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _pos, 1.0f )).xyz;
+	// Convert range from [-.5,.5] to [0, 1]
+	glm::vec2 uvCoords = posInLocalSpace.xz + glm::vec2(.5f, .5f);
+	glm::vec4 texSample = SampleTexture_Linear(uvCoords, &m_rawTexData);
+	// Values are going to be in range of [0-255], need to make them in range of [0-1]
+	glm::vec4 localHeight = glm::vec4(0,(texSample.x / 255.f) * m_heightScaler,0,1);
+	localHeight = GetModelMat() * localHeight;
+	retval = localHeight.y;
 
-
-
-	// Then we do an intersection test from the _pos down (0,-1,0) towards the tri
-	// Get the dist from the tri, subtract it from out y
-	// Then convert to real world coordinates!
-
-	glm::vec4 height = glm::vec4(0,0,0,1);
-	//height.y = (texSample.x / 255.f) * m_heightScaler;
-	// Convert to world coordinate space
-	height = GetModelMat() * height;
-	retval = height.y;
 	return retval;
 }
 

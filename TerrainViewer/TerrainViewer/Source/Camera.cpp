@@ -98,7 +98,7 @@ void Camera::UpdatePos( float _dt )
 	float height = _sim->GetHeightOnTerrain( m_pos );
 	glm::vec3 pos = m_pos;
 	pos.y = height;
-	//SetPos(pos);
+	SetPos(pos);
 }
 void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 {
