@@ -3,6 +3,23 @@
 #include <stdint.h>
 #include "TextureData.h"
 
+struct Triangle
+{
+	Triangle()
+	{
+		v1 = v2 = v3 = glm::vec3();
+	}
+	Triangle( glm::vec3 _v1, glm::vec3 _v2, glm::vec3 _v3 )
+	{
+		v1 = _v1; v2 = _v2; v3 = _v3;
+	}
+	glm::vec3 v1,v2,v3;
+	glm::vec3 GetNormal()
+	{
+		return glm::normalize( glm::cross(v2 - v1, v3 - v1));
+	}
+};
+
 class Terrain : public RenderObjBase
 {
 public:
@@ -142,6 +159,10 @@ public:
 	glm::vec2*			GetScale() {return &m_scaler;}
 	void				Update( float _dt );
 	glm::vec3			GetPos(){return m_position.xyz;}
+	float				GetHeightAtPos( glm::vec3 _pos );
+	bool				AboveTerrain( glm::vec3 _pos );
+	glm::mat4			GetInverseWorldMat();
+
 
 protected:
 	virtual void		CreateVBO(void);
@@ -173,8 +194,11 @@ protected:
 	void				CleanupTerrainTextures();
 	void				BindTexture( GLuint _tex, GLenum _texType, GLenum _texEnum,
 							int _texNum, GLuint _texLoc, ShaderInfo _shader );
+	Triangle			GetTriangleAtWorldPos( glm::vec3 _pos );
+
 private:
 	
+	TextureData m_rawTexData;
 	float		m_heightScaler;
 	glm::vec4*	m_vertices;
 	GLuint*		m_indices; 

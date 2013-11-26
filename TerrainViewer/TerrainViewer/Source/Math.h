@@ -5,3 +5,4 @@
 #include <gtc/matrix_transform.hpp>
 #include <gtc/matrix_inverse.hpp>
 #include <gtx/quaternion.hpp>
+#include <gtx/intersect.hpp>

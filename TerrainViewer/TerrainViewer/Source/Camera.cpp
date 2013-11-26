@@ -84,7 +84,7 @@ void Camera::UpdatePos( float _dt )
 		float tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
 		float n = 3; // n == number of "rose petals" in this pattern
 		float nTickVal = n * tickVal;
-		float r = m_follow_horizDist * cos( nTickVal);
+		float r = m_follow_horizDist * sin( nTickVal);
 		float zRot = sin( tickVal );
 		float xRot = cos( tickVal );
 		glm::vec3 dirToCurPoint = glm::vec3( xRot, 0.0f, zRot);
@@ -94,6 +94,11 @@ void Camera::UpdatePos( float _dt )
 
 		SetPos( dirToCurPoint );
 	}
+
+	float height = _sim->GetHeightOnTerrain( m_pos );
+	glm::vec3 pos = m_pos;
+	pos.y = height;
+	//SetPos(pos);
 }
 void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 {

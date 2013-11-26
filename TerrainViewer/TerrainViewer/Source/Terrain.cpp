@@ -41,6 +41,7 @@ void Terrain::Setup()
 {
 	m_sim = Simulation::GetSimulation();
 	m_heightmap1 = LoadImage("Source\\HeightMap2.bmp");
+	GetTextureData(m_heightmap1, GL_TEXTURE_2D, &m_rawTexData);
 	SetupTerrainTextures();
 	GetHeightData();
 	InitTriVertices();
@@ -421,7 +422,7 @@ void Terrain::RenderTerrain()
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
+	glFrontFace(GL_CW);
 
 	BindTerrainForRender();
 	glDrawElements(GL_TRIANGLES, IndicesCount(), GL_UNSIGNED_INT, (GLvoid*)0);
@@ -439,7 +440,7 @@ void Terrain::RenderNormals()
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
+	glFrontFace(GL_CW);
 
 	BindNormalsForRender();
 	glDrawElements(GL_TRIANGLES, IndicesCount(), GL_UNSIGNED_INT, (GLvoid*)0);
@@ -458,6 +459,27 @@ void Terrain::Render()
 		RenderNormals();
 	}
 }
+
+glm::mat4 Terrain::GetInverseWorldMat()
+{
+	return glm::inverse( GetModelMat() );
+}
+
+bool Terrain::AboveTerrain( glm::vec3 _pos )
+{
+	bool retval = false;
+	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _pos, 1.0f )).xyz;
+	if( posInLocalSpace.x >= -.5f
+		&& posInLocalSpace.x <= .5f
+		&& posInLocalSpace.z >= -.5f
+		&& posInLocalSpace.z <= .5f )
+	{
+		retval = true;
+	}
+
+	return retval;
+}
+
 
 glm::mat4 Terrain::GetModelMat()
 {
@@ -608,9 +630,6 @@ glm::vec4 Terrain::SampleTexture_Linear( glm::vec2 _coords, TextureData* _texDat
 
 void Terrain::GetHeightData()
 {
-	TextureData rawTexData;
-	GetTextureData(m_heightmap1, GL_TEXTURE_2D, &rawTexData);
-
 	glm::vec4 texSample;
 	glm::vec2 coords;
 	for(uint32_t y=0; y<m_vertResolution.y; ++y)
@@ -620,11 +639,66 @@ void Terrain::GetHeightData()
 		for(uint32_t x=0; x<m_vertResolution.x; ++x)
 		{
 			coords.x = x/(m_vertResolution.x-1.f);
-			texSample = SampleTexture_Linear(coords, &rawTexData);
+			texSample = SampleTexture_Linear(coords, &m_rawTexData);
 			// Values are going to be in range of [0-255], need to make them in range of [0-1]
 			m_heightData[y * m_vertResolution.x + x] = (texSample.x / 255.f) * m_heightScaler;
 		}
 	}
+}
+
+Triangle Terrain::GetTriangleAtWorldPos( glm::vec3 _pos )
+{
+	Triangle tri;
+	// Convert pos to local space
+	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _pos, 1.0f )).xyz;
+	// Convert range from [-.5,.5] to [0, 1]
+	posInLocalSpace.xz += glm::vec2(.5f, .5f);
+	// Convert to vertCoords
+	glm::vec2 vertCoords = posInLocalSpace.xz * glm::vec2(m_vertResolution.x, m_vertResolution.y);
+	// This trick round us to the closest whole number coordinate
+	glm::vec2 v1 = glm::vec2( floor(vertCoords.x + .5f), floor(vertCoords.y + .5f));
+
+	// Now we determine which other coordinates to check to get our tri
+	glm::vec2 v2, v3;
+	// If our first index is on the left of the grid
+	// or original point is closer to right
+	if( ((int)v1.x % (int)m_vertResolution.x) == 0 
+		|| vertCoords.x > v1.x )
+	{
+		//... we must go right
+		v3 = v1 + glm::vec2(1,0);
+	}
+	else
+	{
+		//... we must go left
+		v2 = v1 + glm::vec2(-1,0);
+	}
+
+	if( ((int)v1.y % (int)m_vertResolution.x) == 0 
+		|| vertCoords.x < v1.x  )
+	{
+
+	}
+	return tri;
+}
+
+float Terrain::GetHeightAtPos( glm::vec3 _pos )
+{
+	float retval = 0.f;
+	
+
+
+
+	// Then we do an intersection test from the _pos down (0,-1,0) towards the tri
+	// Get the dist from the tri, subtract it from out y
+	// Then convert to real world coordinates!
+
+	glm::vec4 height = glm::vec4(0,0,0,1);
+	//height.y = (texSample.x / 255.f) * m_heightScaler;
+	// Convert to world coordinate space
+	height = GetModelMat() * height;
+	retval = height.y;
+	return retval;
 }
 
 void Terrain::InitTriVertices()
@@ -634,7 +708,7 @@ void Terrain::InitTriVertices()
 	// based on the face counts.
 	// We're also going to set the texCoords.
 	float xPos = -.5f;
-	float zPos = .5f;
+	float zPos = -.5f;
 	float texXPos = 0.f;
 	float texYPos = 0.f;
 	float xStart = -.5f;
@@ -656,7 +730,7 @@ void Terrain::InitTriVertices()
 		xPos = xStart;
 		texXPos = 0.f;
 
-		zPos-=dInc;
+		zPos+=dInc;
 		texYPos+=dInc;
 	}
 	SmoothVertices();
@@ -782,7 +856,7 @@ void Terrain::InitNormals()
 			southNorth = v1 - v2;
 			southNorth = glm::normalize(southNorth);
 
-			normal = glm::cross(eastWest, southNorth);
+			normal = glm::cross( southNorth, eastWest);
 			normal = glm::normalize(normal);
 			if(normal.x == -0)
 			{
@@ -829,7 +903,6 @@ void Terrain::InitTriIndices()
 
 			// We now add the indices that represent a triangle in CCW fashion,
 			// 2 triangles per face
-			//TODO Change the order to be CW because
 			m_indices[idxCnt++] = v1;
 			m_indices[idxCnt++] = v4;
 			m_indices[idxCnt++] = v2;

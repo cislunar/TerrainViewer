@@ -23,6 +23,7 @@ public:
 	void UpdateKeys(SDLKey _key, bool _State );
 	bool GetKey( SDLKey _key );
 	bool GetOnKeyDown( SDLKey _key );
+	float GetHeightOnTerrain( glm::vec3 _other );
 
 private:
 	Simulation();							// Force use of singleton
