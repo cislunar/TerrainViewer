@@ -60,9 +60,9 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 		{
 			float nDotH = max(dot(norm, halfV),0.0f);
 
+			float specColor = pow(nDotH, 5.f);
 			// First value is the hard-coded value for the material's shininess factor
-			float specColor = pow(nDotH, 10.f);
-			retColor += vec4(vec3(.5f,.5f,.5f) * _snowFactor * specColor, 0);
+			retColor += vec4(vec3(.2f,.2f,.2f) * _snowFactor * specColor, 0);
 		}
 	}
 	return retColor;
