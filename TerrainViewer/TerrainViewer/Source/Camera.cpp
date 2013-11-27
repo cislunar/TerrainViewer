@@ -7,11 +7,11 @@ static Simulation* _sim = Simulation::GetSimulation();
 Camera::Camera()
 {
 	m_gravity					= -500.f;
-	m_spring_minDist			= 1000.f;
+	m_spring_minDist			= 1500.f;
 	m_mass						= 75.f;
 	m_spring_Str				= 300.f;
 	m_spring_DampStr			= 100.f;
-	m_spring_EquilibriumDist	= 3000.f;
+	m_spring_EquilibriumDist	= 5000.f;
 	m_follow_horizDist			= 75000;
 	m_follow_vertDist			= 15000;
 	m_orbitSpeed				= .05f;
