@@ -6,7 +6,7 @@ class Camera
 public:
 	enum CAM_MOVE_STATE
 	{
-		FOLLOW_PATH,
+		ORBIT,
 		USER_INPUT,
 		CAM_MOVE_STATE_COUNT
 	};
@@ -21,6 +21,12 @@ public:
 	glm::vec3	GetRight();
 	glm::mat4	GetRotMat();
 	float*		GetOrbitSpeed(){return &m_orbitSpeed;}
+	float*		GetSpringStr(){return &m_spring_Str;}
+	float*		GetSpringDampStr(){return &m_spring_DampStr;}
+	float*		GetSpringEquilibriumDist(){return &m_spring_EquilibriumDist;}
+	float*		GetMass(){return & m_mass;}
+	float*		GetGravity(){return &m_gravity;}
+
 protected:
 private:
 	void UpdatePos( float _dt );
@@ -28,6 +34,7 @@ private:
 	void UpdatePos_UserInput( float _dt );
 	void UpdateRot( float _dt, glm::vec2 _mouseDelta  );
 	void UpdateMoveState( );
+	float UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt );
 
 	float m_follow_horizDist;
 	float m_follow_vertDist;
@@ -37,10 +44,21 @@ private:
 	glm::vec3 m_pos;
 	glm::vec3 m_prevPos;
 	glm::vec3 m_rot;
-	float m_nearClipPlane;
-	float m_farClipPlane;
-	float m_FOV;
+	float 
+		m_nearClipPlane,
+		m_farClipPlane,
+		m_FOV;
 	float m_moveSpeed;
 	float m_rotSpeed;
+	float m_mass;
+	float 
+		m_yAccel,
+		m_yVel,
+		m_gravity;
+	float 
+		m_spring_Str,
+		m_spring_DampStr,
+		m_spring_EquilibriumDist,
+		m_spring_minDist;
 	CAM_MOVE_STATE m_moveState;
 };

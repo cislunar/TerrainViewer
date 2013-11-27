@@ -145,6 +145,7 @@ public:
 	float				GetHeightAtPos( glm::vec3 _pos );
 	bool				AboveTerrain( glm::vec3 _pos );
 	glm::mat4			GetInverseWorldMat();
+	float				GetPctMaxHeightTerrain( glm::vec3 _otherWorldPos );
 
 
 protected:

@@ -24,7 +24,7 @@ public:
 	bool GetKey( SDLKey _key );
 	bool GetOnKeyDown( SDLKey _key );
 	float GetHeightOnTerrain( glm::vec3 _other );
-
+	float GetPctMaxHeightTerrain( glm::vec3 _otherWorldPos );
 private:
 	Simulation();							// Force use of singleton
 

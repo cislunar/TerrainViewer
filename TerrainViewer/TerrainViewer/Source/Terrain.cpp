@@ -628,6 +628,12 @@ glm::vec4 Terrain::SampleTexture_Linear( glm::vec2 _coords, TextureData* _texDat
 	return VecLerp(top, bot, glm::fract(y) );
 }
 
+float Terrain::GetPctMaxHeightTerrain( glm::vec3 _otherWorldPos )
+{
+	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _otherWorldPos, 1.0f )).xyz;
+	return posInLocalSpace.y / m_heightScaler;
+}
+
 void Terrain::GetHeightData()
 {
 	glm::vec4 texSample;
