@@ -42,63 +42,73 @@ void Camera::UpdateMoveState( )
 	}
 }
 
-void Camera::UpdatePos( float _dt )
+void Camera::UpdatePos_Orbit( float _dt )
+{
+	//F = -k(|x|-d)(x/|x|) - bv
+	glm::vec3 rotateCenter = glm::vec3();
+	float tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
+	float n = 3; // n == number of "rose petals" in this pattern
+	float nTickVal = n * tickVal;
+	float r = m_follow_horizDist * sin( nTickVal);
+	float zRot = sin( tickVal );
+	float xRot = cos( tickVal );
+	glm::vec3 dirToCurPoint = glm::vec3( xRot, 0.0f, zRot);
+	dirToCurPoint = glm::normalize(dirToCurPoint);
+	dirToCurPoint *= r;
+	dirToCurPoint.y = m_follow_vertDist;
+
+	SetPos( dirToCurPoint );
+
+	glm::vec3 anchorPoint = m_pos;
+	float height = _sim->GetHeightOnTerrain( anchorPoint );
+	anchorPoint.y = height;
+}
+
+void Camera::UpdatePos_UserInput( float _dt )
 {
 	glm::vec3 moveDir = glm::vec3();
+	glm::vec3 camPlaneForward = glm::cross(glm::vec3(0,1,0), m_right);
+	// Global Z Axis
+	if( _sim->GetKey(SDLK_w) )
+	{
+		moveDir += m_moveSpeed * camPlaneForward;
+	}
+	if( _sim->GetKey(SDLK_s))
+	{
+		moveDir += m_moveSpeed * (-camPlaneForward);
+	}
+	// Global X Axis
+	if( _sim->GetKey(SDLK_a))
+	{
+		moveDir += m_moveSpeed * (-m_right);
+	}
+	if( _sim->GetKey(SDLK_d))
+	{
+		moveDir += m_moveSpeed * (m_right);
+	}
+	// Global Y Axis
+	if( _sim->GetKey(SDLK_q))
+	{
+		moveDir += glm::vec3(0,-1,0) * m_moveSpeed;
+	}
+	if( _sim->GetKey(SDLK_e))
+	{
+		moveDir += glm::vec3(0,1,0) * m_moveSpeed;
+	}
+
+	SetPos( m_pos + (moveDir * _dt) );
+}
+
+void Camera::UpdatePos( float _dt )
+{
 	if(m_moveState == USER_INPUT)
 	{
-		glm::vec3 camPlaneForward = glm::cross(glm::vec3(0,1,0), m_right);
-		// Global Z Axis
-		if( _sim->GetKey(SDLK_w) )
-		{
-			moveDir += m_moveSpeed * camPlaneForward;
-		}
-		if( _sim->GetKey(SDLK_s))
-		{
-			moveDir += m_moveSpeed * (-camPlaneForward);
-		}
-		// Global X Axis
-		if( _sim->GetKey(SDLK_a))
-		{
-			moveDir += m_moveSpeed * (-m_right);
-		}
-		if( _sim->GetKey(SDLK_d))
-		{
-			moveDir += m_moveSpeed * (m_right);
-		}
-		// Global Y Axis
-		if( _sim->GetKey(SDLK_q))
-		{
-			moveDir += glm::vec3(0,-1,0) * m_moveSpeed;
-		}
-		if( _sim->GetKey(SDLK_e))
-		{
-			moveDir += glm::vec3(0,1,0) * m_moveSpeed;
-		}
-
-		SetPos( m_pos + (moveDir * _dt) );
+		UpdatePos_UserInput( _dt );
 	}
 	else
 	{
-		glm::vec3 rotateCenter = glm::vec3();
-		float tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
-		float n = 3; // n == number of "rose petals" in this pattern
-		float nTickVal = n * tickVal;
-		float r = m_follow_horizDist * sin( nTickVal);
-		float zRot = sin( tickVal );
-		float xRot = cos( tickVal );
-		glm::vec3 dirToCurPoint = glm::vec3( xRot, 0.0f, zRot);
-		dirToCurPoint = glm::normalize(dirToCurPoint);
-		dirToCurPoint *= r;
-		dirToCurPoint.y = m_follow_vertDist;
-
-		SetPos( dirToCurPoint );
+		UpdatePos_Orbit( _dt );
 	}
-
-	float height = _sim->GetHeightOnTerrain( m_pos );
-	glm::vec3 pos = m_pos;
-	pos.y = height;
-	SetPos(pos);
 }
 void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 {

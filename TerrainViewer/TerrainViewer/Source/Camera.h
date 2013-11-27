@@ -24,6 +24,8 @@ public:
 protected:
 private:
 	void UpdatePos( float _dt );
+	void UpdatePos_Orbit( float _dt );
+	void UpdatePos_UserInput( float _dt );
 	void UpdateRot( float _dt, glm::vec2 _mouseDelta  );
 	void UpdateMoveState( );
 
