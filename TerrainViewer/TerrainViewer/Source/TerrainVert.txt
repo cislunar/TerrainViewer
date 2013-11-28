@@ -44,7 +44,7 @@ void main(void)
 
 	light.color = vec3(1,1,.9);
 	light.ambientIntensity = .2f;
-	light.dir = vec3(1, -.8, -1);
+	light.dir = vec3(.5, -.8, -.5);
 	light.dir = normalize(light.dir);
 	light.diffuseIntensity = .9f;
 	light.dir = normalize(light.dir);

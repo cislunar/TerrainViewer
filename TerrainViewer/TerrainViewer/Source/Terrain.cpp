@@ -260,7 +260,7 @@ void Terrain::CreateTerrainShader()
 void Terrain::SetupTerrainTextures()
 {
 	m_snowTex		= LoadImage("Source\\snowTex.jpg");
-	m_rockFaceTex	= LoadImage("Source\\rockTex2.jpg");
+	m_rockFaceTex	= LoadImage("Source\\rockTex.jpg");
 	m_grassTex		= LoadImage("Source\\grassTex1.jpg");
 
 	glBindTexture( GL_TEXTURE_2D, m_snowTex );
@@ -296,8 +296,8 @@ void Terrain::SetupTerrainTextures()
 	snowCoordOffsets = glm::vec2( 20.f / m_vertResolution.x,
 									20.f / m_vertResolution.y );
 
-	rockCoordOffsets = glm::vec2( 30.f / m_vertResolution.x,
-									30.f / m_vertResolution.y );
+	rockCoordOffsets = glm::vec2( 50.f / m_vertResolution.x,
+									50.f / m_vertResolution.y );
 
 	grassCoordOffsets = glm::vec2( 80.f / m_vertResolution.x,
 									80.f / m_vertResolution.y );

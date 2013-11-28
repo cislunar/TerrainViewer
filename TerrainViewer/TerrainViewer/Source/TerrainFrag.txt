@@ -78,7 +78,7 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 vec4 TextureColors(float normY, inout bool _hasSnow, inout float _snowFactor)
 {
 	// Thresholds
-	float minThreshSnow = .54f;
+	float minThreshSnow = .52f;
 	float threshFullSnow = .56f;
 	float minThreshRock = .91f;
 	float threshFullRock = .88f;
