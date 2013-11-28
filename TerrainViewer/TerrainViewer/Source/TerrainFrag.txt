@@ -81,7 +81,7 @@ vec4 TextureColors(float normY, inout bool _hasSnow, inout float _snowFactor)
 	float minThreshSnow = .54f;
 	float threshFullSnow = .56f;
 	float minThreshRock = .91f;
-	float threshFullRock = .89f;
+	float threshFullRock = .88f;
 
 	// Texture colors
 	vec4 rockColor = texture2D(rock, rockUV);

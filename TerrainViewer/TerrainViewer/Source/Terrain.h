@@ -181,28 +181,28 @@ protected:
 
 private:
 	
-	TextureData m_rawTexData;
-	float		m_heightScaler;
-	glm::vec4*	m_vertices;
-	GLuint*		m_indices; 
-	float*		m_heightData;
-	glm::vec2*	m_texCoords;
-	glm::vec3*	m_vertNormals;
-	glm::uvec2	m_faceResolution;
-	glm::uvec2	m_vertResolution;
-	glm::vec4	m_position;
-	GLuint		m_testTex;
-	GLuint		m_heightmap1;
-	GLuint		m_heightmapTxbo;
-	glm::vec3	m_modelScale;
-	glm::vec2	m_scaler;
-	ShaderInfo	m_terrainShader;
-	ShaderInfo	m_normalsShader;
-	bool		m_renderNormals;
-	RenderState m_renderState;
-	const int	m_defaultScale = 20;
-	const int	m_defaultScaler = 15000;
-	const int	m_defaultFaceDim = 1024;
+	TextureData			m_rawTexData;
+	float				m_heightScaler;
+	glm::vec4*			m_vertices;
+	GLuint*				m_indices; 
+	float*				m_heightData;
+	glm::vec2*			m_texCoords;
+	glm::vec3*			m_vertNormals;
+	glm::uvec2			m_faceResolution;
+	glm::uvec2			m_vertResolution;
+	glm::vec4			m_position;
+	GLuint				m_testTex;
+	GLuint				m_heightmap1;
+	GLuint				m_heightmapTxbo;
+	glm::vec3			m_modelScale;
+	glm::vec2			m_scaler;
+	ShaderInfo			m_terrainShader;
+	ShaderInfo			m_normalsShader;
+	bool				m_renderNormals;
+	RenderState			m_renderState;
+	static const int	m_defaultScale = 20;
+	static const int	m_defaultScaler = 15000;
+	static const int	m_defaultFaceDim = 1024;
 
 	glm::vec2	
 		*m_snowTexCoords,
