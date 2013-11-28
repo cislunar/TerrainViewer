@@ -22,9 +22,9 @@ public:
 		m_heightScaler		= 0.1f;
 		m_renderNormals		= false;
 		m_position			= glm::vec4(0,0,0,1);
-		m_modelScale		= glm::vec3(20, 20, 20);
-		m_scaler			=  glm::vec2( 15000, 15000.f);
-		m_faceResolution	= glm::uvec2(512,512);
+		m_modelScale		= glm::vec3(m_defaultScale, m_defaultScale, m_defaultScale);
+		m_scaler			=  glm::vec2( (float)m_defaultScaler, (float)m_defaultScaler);
+		m_faceResolution	= glm::uvec2( (float)m_defaultFaceDim, (float)m_defaultFaceDim);
 		m_vertResolution	= m_faceResolution + glm::uvec2(1,1);
 
 		m_vertices = (glm::vec4*)malloc(sizeof(glm::vec4) * VerticesCnt() );
@@ -200,6 +200,9 @@ private:
 	ShaderInfo	m_normalsShader;
 	bool		m_renderNormals;
 	RenderState m_renderState;
+	const int	m_defaultScale = 20;
+	const int	m_defaultScaler = 15000;
+	const int	m_defaultFaceDim = 1024;
 
 	glm::vec2	
 		*m_snowTexCoords,

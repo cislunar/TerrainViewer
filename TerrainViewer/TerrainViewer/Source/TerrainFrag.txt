@@ -37,6 +37,9 @@ uniform sampler2D grass;
 vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 {
 	vec4 retColor = vec4(0,0,0,0);
+
+	//-----------------------------------------------------------------------------------------
+	// AMBIENT COLOR CALCULATION
 	if( renderState == 3
 		|| renderState == 0 )
 	{
@@ -44,6 +47,8 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 		retColor += ambientColor;
 	}
 
+	//-----------------------------------------------------------------------------------------
+	// DIFFUSE COLOR CALCULATION
 	if( renderState == 3
 		|| renderState == 1 )
 	{
@@ -53,6 +58,8 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 		retColor += diffuseColor;
 	}
 
+	//-----------------------------------------------------------------------------------------
+	// SPECULAR COLOR CALCULATION
 	if( renderState == 3
 		|| renderState == 2 )
 	{
@@ -68,29 +75,21 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 	return retColor;
 }
 
-vec4 PhongColor( vec3 norm )
-{
-	vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1);
-	vec4 diffuseColor = vec4(0,0,0,0);
-
-	float diffuseFactor = max( dot(norm, normalize(-light.dir)), 0.0f);
-	diffuseColor = vec4(light.color, 1.0f) * light.diffuseIntensity * diffuseFactor;
-
-	vec4 retColor = diffuseColor + ambientColor;
-
-	return clamp(retColor, 0.0, 1.0);
-}
-
 vec4 TextureColors(float normY, inout bool _hasSnow, inout float _snowFactor)
 {
+	// Thresholds
 	float minThreshSnow = .54f;
 	float threshFullSnow = .56f;
 	float minThreshRock = .91f;
 	float threshFullRock = .89f;
+
+	// Texture colors
 	vec4 rockColor = texture2D(rock, rockUV);
 	vec4 snowColor = texture2D(snow, snowUV);
 	vec4 grassColor = texture2D(grass, grassUV);
 
+	//-----------------------------------------------------------------------------------------
+	// Texture blending
 	// HACK .1f is a hardcoded hack. We should upload the max height in case we change it
 	float heightPct = defaultHeight / .1f;
 	vec4 retColor = vec4(0,0,0,0);
@@ -114,8 +113,12 @@ bool hasSnow = false;
 float snowFactor = 0.0f;
 void main(void)
 {
+	// Normal and half vector (blinn-phong) need to be normalized after
+	// being passed from vertShader because they are being interpolated
 	vec3 newNorm = normalize(vertNormal);
 	vec3 newHalfV = normalize(halfDir);
+	
+	// Get texture colors then use BlinnPhong calculation to get realistic lighting
 	out_Color = TextureColors(newNorm.y, hasSnow, snowFactor);
     out_Color *= BlinnPhongColor( newNorm, newHalfV, hasSnow, snowFactor );
 	if(renderState == 4)
