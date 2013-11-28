@@ -104,7 +104,7 @@ vec4 TextureColors(float normY, inout bool _hasSnow, inout float _snowFactor)
 	retColor = mix( retColor, rockColor, rockLerpVal );
 
 	_hasSnow = snowLerpVal > rockLerpVal;
-	_snowFactor = snowLerpVal;
+	_snowFactor = snowLerpVal - rockLerpVal;
 	retColor.a = 1;
 	return retColor;
 }
