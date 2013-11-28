@@ -6,7 +6,7 @@ static Simulation* _sim = Simulation::GetSimulation();
 
 Camera::Camera()
 {
-	m_gravity					= -500.f;
+	m_gravity					= -2000.f;
 	m_spring_minDist			= 1500.f;
 	m_mass						= 75.f;
 	m_spring_Str				= 300.f;

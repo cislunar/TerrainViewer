@@ -202,7 +202,7 @@ private:
 	RenderState			m_renderState;
 	static const int	m_defaultScale = 20;
 	static const int	m_defaultScaler = 15000;
-	static const int	m_defaultFaceDim = 1024;
+	static const int	m_defaultFaceDim = 512;
 
 	glm::vec2	
 		*m_snowTexCoords,

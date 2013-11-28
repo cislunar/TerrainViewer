@@ -43,8 +43,8 @@ void main(void)
 	grassUV = grassCoords;
 
 	light.color = vec3(1,1,1);
-	light.ambientIntensity = .3f;
-	light.dir = vec3(0, -.8, -1);
+	light.ambientIntensity = .2f;
+	light.dir = vec3(1, -.8, -1);
 	light.dir = normalize(light.dir);
 	light.diffuseIntensity = .8f;
 	light.dir = normalize(light.dir);

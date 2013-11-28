@@ -69,7 +69,7 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 
 			float specColor = pow(nDotH, 5.f);
 			// First value is the hard-coded value for the material's shininess factor
-			retColor += vec4(vec3(.2f,.2f,.2f) * _snowFactor * specColor, 0);
+			retColor += vec4(vec3(.8f,.8f,.8f) * _snowFactor * specColor, 0);
 		}
 	}
 	return retColor;
@@ -121,6 +121,7 @@ void main(void)
 	// Get texture colors then use BlinnPhong calculation to get realistic lighting
 	out_Color = TextureColors(newNorm.y, hasSnow, snowFactor);
     out_Color *= BlinnPhongColor( newNorm, newHalfV, hasSnow, snowFactor );
+	out_Color.a = 1;
 	if(renderState == 4)
 	{
 		//Render normals of each frag via color
