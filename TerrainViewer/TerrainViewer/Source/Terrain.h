@@ -19,11 +19,11 @@ public:
 	Terrain() : RenderObjBase()
 	{
 		m_renderState		= PHONG_RENDER_STATE;
-		m_heightScaler		= 0.1f;
+		m_heightDataScaler		= .5f;
 		m_renderNormals		= false;
 		m_position			= glm::vec4(0,0,0,1);
 		m_modelScale		= glm::vec3(m_defaultScale, m_defaultScale, m_defaultScale);
-		m_scaler			=  glm::vec2( (float)m_defaultScaler, (float)m_defaultScaler);
+		m_scaler			=  glm::vec2( (float)m_defaultHorizScaler, (float)m_defaultVertScaler);
 		m_faceResolution	= glm::uvec2( (float)m_defaultFaceDim, (float)m_defaultFaceDim);
 		m_vertResolution	= m_faceResolution + glm::uvec2(1,1);
 
@@ -182,7 +182,7 @@ protected:
 private:
 	
 	TextureData			m_rawTexData;
-	float				m_heightScaler;
+	float				m_heightDataScaler;
 	glm::vec4*			m_vertices;
 	GLuint*				m_indices; 
 	float*				m_heightData;
@@ -201,7 +201,8 @@ private:
 	bool				m_renderNormals;
 	RenderState			m_renderState;
 	static const int	m_defaultScale = 20;
-	static const int	m_defaultScaler = 15000;
+	static const int	m_defaultHorizScaler = 60000;
+	static const int	m_defaultVertScaler = 15000;
 	static const int	m_defaultFaceDim = 512;
 
 	glm::vec2	

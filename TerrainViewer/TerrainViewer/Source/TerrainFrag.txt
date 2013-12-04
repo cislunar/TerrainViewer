@@ -80,8 +80,8 @@ vec4 TextureColors(float normY, inout bool _hasSnow, inout float _snowFactor)
 	// Thresholds
 	float minThreshSnow = .52f;
 	float threshFullSnow = .56f;
-	float minThreshRock = .91f;
-	float threshFullRock = .88f;
+	float minThreshRock = .5f;
+	float threshFullRock = .4f;
 
 	// Texture colors
 	vec4 rockColor = texture2D(rock, rockUV);
@@ -91,7 +91,7 @@ vec4 TextureColors(float normY, inout bool _hasSnow, inout float _snowFactor)
 	//-----------------------------------------------------------------------------------------
 	// Texture blending
 	// HACK .1f is a hardcoded hack. We should upload the max height in case we change it
-	float heightPct = defaultHeight / .1f;
+	float heightPct = defaultHeight / .5f;
 	vec4 retColor = vec4(0,0,0,0);
 
 	float rockLerpVal = ( normY - minThreshRock ) / (threshFullRock - minThreshRock);

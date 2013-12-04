@@ -631,7 +631,7 @@ glm::vec4 Terrain::SampleTexture_Linear( glm::vec2 _coords, TextureData* _texDat
 float Terrain::GetPctMaxHeightTerrain( glm::vec3 _otherWorldPos )
 {
 	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _otherWorldPos, 1.0f )).xyz;
-	return posInLocalSpace.y / m_heightScaler;
+	return posInLocalSpace.y / m_heightDataScaler;
 }
 
 void Terrain::GetHeightData()
@@ -647,7 +647,7 @@ void Terrain::GetHeightData()
 			coords.x = x/(m_vertResolution.x-1.f);
 			texSample = SampleTexture_Linear(coords, &m_rawTexData);
 			// Values are going to be in range of [0-255], need to make them in range of [0-1]
-			m_heightData[y * m_vertResolution.x + x] = (texSample.x / 255.f) * m_heightScaler;
+			m_heightData[y * m_vertResolution.x + x] = (texSample.x / 255.f) * m_heightDataScaler;
 		}
 	}
 }
@@ -660,7 +660,7 @@ float Terrain::GetHeightAtPos( glm::vec3 _pos )
 	glm::vec2 uvCoords = posInLocalSpace.xz + glm::vec2(.5f, .5f);
 	glm::vec4 texSample = SampleTexture_Linear(uvCoords, &m_rawTexData);
 	// Values are going to be in range of [0-255], need to make them in range of [0-1]
-	glm::vec4 localHeight = glm::vec4(0,(texSample.x / 255.f) * m_heightScaler,0,1);
+	glm::vec4 localHeight = glm::vec4(0,(texSample.x / 255.f) * m_heightDataScaler,0,1);
 	localHeight = GetModelMat() * localHeight;
 	retval = localHeight.y;
 

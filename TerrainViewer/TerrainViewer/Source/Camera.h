@@ -48,7 +48,8 @@ private:
 		m_nearClipPlane,
 		m_farClipPlane,
 		m_FOV;
-	float m_moveSpeed;
+	float m_moveSpeed,
+			m_moveSpeedMulti;
 	float m_rotSpeed;
 	float m_mass;
 	float 

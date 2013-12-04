@@ -11,20 +11,21 @@ Camera::Camera()
 	m_mass						= 75.f;
 	m_spring_Str				= 300.f;
 	m_spring_DampStr			= 100.f;
-	m_spring_EquilibriumDist	= 5000.f;
+	m_spring_EquilibriumDist	= 7000.f;
 	m_follow_horizDist			= 75000;
-	m_follow_vertDist			= 15000;
-	m_orbitSpeed				= .05f;
+	m_follow_vertDist			= 100000;
+	m_orbitSpeed				= .07f;
 	m_moveState					= USER_INPUT;
-	m_pos						= glm::vec3(0,50000, 0);
+	m_pos						= glm::vec3(0,100000, 0);
 	m_rot						= glm::vec3();
 	m_nearClipPlane				= 1.0f;
 	m_farClipPlane				= 1000000.f;
 	m_FOV						= 30.f;
-	m_moveSpeed					= 20000.f;
+	m_moveSpeed					= 40000.f;
 	m_rotSpeed					= 0.5f;
 	m_forward					= glm::vec3(0,0,-1);
 	m_right						= glm::vec3(1,0,0);
+	m_moveSpeedMulti			= 2.f;
 }
 
 void Camera::Update( float _dt, glm::vec2 _mouseDelta )
@@ -115,32 +116,39 @@ void Camera::UpdatePos_UserInput( float _dt )
 {
 	glm::vec3 moveDir = glm::vec3();
 	glm::vec3 camPlaneForward = glm::cross(glm::vec3(0,1,0), m_right);
+
+	float speed = m_moveSpeed;
+	// Speed modifier
+	if( _sim->GetKey(SDLK_LSHIFT) )
+	{
+		speed *= m_moveSpeedMulti;
+	}
 	// Global Z Axis
 	if( _sim->GetKey(SDLK_w) )
 	{
-		moveDir += m_moveSpeed * camPlaneForward;
+		moveDir += speed * camPlaneForward;
 	}
 	if( _sim->GetKey(SDLK_s))
 	{
-		moveDir += m_moveSpeed * (-camPlaneForward);
+		moveDir += speed * (-camPlaneForward);
 	}
 	// Global X Axis
 	if( _sim->GetKey(SDLK_a))
 	{
-		moveDir += m_moveSpeed * (-m_right);
+		moveDir += speed * (-m_right);
 	}
 	if( _sim->GetKey(SDLK_d))
 	{
-		moveDir += m_moveSpeed * (m_right);
+		moveDir += speed * (m_right);
 	}
 	// Global Y Axis
 	if( _sim->GetKey(SDLK_q))
 	{
-		moveDir += glm::vec3(0,-1,0) * m_moveSpeed;
+		moveDir += glm::vec3(0,-1,0) * speed;
 	}
 	if( _sim->GetKey(SDLK_e))
 	{
-		moveDir += glm::vec3(0,1,0) * m_moveSpeed;
+		moveDir += glm::vec3(0,1,0) * speed;
 	}
 
 	SetPos( m_pos + (moveDir * _dt) );
