@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define CAMERA_POS_CAPTURE true
+#define CAMERA_POS_CAPTURE false
 #define CAM_POS_FILENAME "Cam-Trail-Positions.txt"
 
 class Camera

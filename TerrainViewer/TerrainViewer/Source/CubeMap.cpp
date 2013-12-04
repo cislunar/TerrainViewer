@@ -104,10 +104,10 @@ void CubeMap::LoadCubeMap()
 {
 	char *files[6] = 
 	{
-		CUBE_MAP_RIGHT,	
 		CUBE_MAP_LEFT,	
-		CUBE_MAP_UP,		
-		CUBE_MAP_DOWN,	
+		CUBE_MAP_RIGHT,
+		CUBE_MAP_UP,
+		CUBE_MAP_DOWN,
 		CUBE_MAP_FRONT,	
 		CUBE_MAP_BACK	
 	};
@@ -122,7 +122,8 @@ void CubeMap::LoadCubeMap()
 
 	for( int i=0; i<6; ++i)
 	{
-		if ( (surface = IMG_Load("Source\\rockTex.jpg")))//files[i])) ) 
+		char* file = files[i];
+		if ( (surface = IMG_Load(file)) ) 
 		{
 			// Check that the image’s width is a power of 2
 			if ( (surface->w & (surface->w - 1)) != 0 ) 
@@ -200,7 +201,6 @@ void CubeMap::Cleanup()
 
 void CubeMap::Render()
 {
-
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
@@ -214,7 +214,6 @@ void CubeMap::Render()
 
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
-	printOpenGLError();
 	printOpenGLError();
 
 }
