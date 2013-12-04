@@ -150,9 +150,9 @@ void Obj3D::BindForRender()
 	// Buffer the matrices
 	glUniformMatrix4fv(ModelMatrixUniformLocation, 1, GL_FALSE, &(GetModelMat())[0][0] );
 	// THIS NEEDS TO BE VIEW MATRIX
-	glUniformMatrix4fv(ViewMatrixUniformLocation, 1, GL_FALSE, &(sim->GetViewMat())[0][0]);
+	glUniformMatrix4dv(ViewMatrixUniformLocation, 1, GL_FALSE, &(sim->GetViewMat())[0][0]);
 	// Then get the perspective matrix
-	glUniformMatrix4fv(ProjectionMatrixUniformLocation, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
+	glUniformMatrix4dv(ProjectionMatrixUniformLocation, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
 
 	// bind the vertex array
 	glBindVertexArray(m_shaderInfo.VaoId);

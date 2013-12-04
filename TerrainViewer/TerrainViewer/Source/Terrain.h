@@ -19,20 +19,20 @@ public:
 	Terrain() : RenderObjBase()
 	{
 		m_renderState		= PHONG_RENDER_STATE;
-		m_heightDataScaler		= .7f;
+		m_heightDataScaler		= .7;
 		m_renderNormals		= false;
-		m_position			= glm::vec4(0,0,0,1);
-		m_modelScale		= glm::vec3(m_defaultScale, m_defaultScale, m_defaultScale);
-		m_scaler			=  glm::vec2( (float)m_defaultHorizScaler, (float)m_defaultVertScaler);
+		m_position			= glm::dvec4(0,0,0,1);
+		m_modelScale		= glm::dvec3((double)m_defaultScale, (double)m_defaultScale, (double)m_defaultScale);
+		m_scaler			=  glm::dvec2( (double)m_defaultHorizScaler, (double)m_defaultVertScaler);
 		m_faceResolution	= glm::uvec2( (float)m_defaultFaceDim, (float)m_defaultFaceDim);
 		m_vertResolution	= m_faceResolution + glm::uvec2(1,1);
 
-		m_vertices = (glm::vec4*)malloc(sizeof(glm::vec4) * VerticesCnt() );
+		m_vertices = (glm::dvec4*)malloc(sizeof(glm::dvec4) * VerticesCnt() );
 		if(m_vertices == NULL)
 		{
 			fprintf(stderr, "out of memory\n");
 		}
-		memset(m_vertices, 0, sizeof(glm::vec4) * VerticesCnt() );
+		memset(m_vertices, 0, sizeof(glm::dvec4) * VerticesCnt() );
 
 		m_indices = (GLuint*)malloc(sizeof(GLuint) * IndicesCount());
 		if(m_indices == NULL)
@@ -48,19 +48,19 @@ public:
 		}
 		memset(m_texCoords, 0, sizeof(glm::vec2) * VerticesCnt() );
 
-		m_vertNormals = (glm::vec3*)malloc(sizeof(glm::vec3) * VerticesCnt() );
+		m_vertNormals = (glm::dvec3*)malloc(sizeof(glm::dvec3) * VerticesCnt() );
 		if(m_vertNormals == NULL)
 		{
 			fprintf(stderr, "out of memory\n");
 		}
-		memset(m_vertNormals, 0, sizeof(glm::vec3) * VerticesCnt() );
+		memset(m_vertNormals, 0, sizeof(glm::dvec3) * VerticesCnt() );
 
-		m_heightData = (float*)malloc(sizeof(float) * VerticesCnt() );
+		m_heightData = (double*)malloc(sizeof(double) * VerticesCnt() );
 		if(m_heightData == NULL)
 		{
 			fprintf(stderr, "out of memory\n");
 		}
-		memset(m_heightData, 0, sizeof(float) * VerticesCnt() );
+		memset(m_heightData, 0, sizeof(double) * VerticesCnt() );
 
 		m_snowTexCoords = (glm::vec2*)malloc(sizeof(glm::vec2) * VerticesCnt() );
 		if(m_snowTexCoords == NULL)
@@ -136,16 +136,16 @@ public:
 	}
 
 	virtual void		Render(void);
-	virtual glm::mat4	GetModelMat();
+	virtual glm::dmat4	GetModelMat();
 	void				Setup();
 	void				Cleanup();
-	glm::vec2*			GetScale() {return &m_scaler;}
+	glm::dvec2*			GetScale() {return &m_scaler;}
 	void				Update( float _dt );
-	glm::vec3			GetPos(){return m_position.xyz;}
-	float				GetHeightAtPos( glm::vec3 _pos );
-	bool				AboveTerrain( glm::vec3 _pos );
-	glm::mat4			GetInverseWorldMat();
-	float				GetPctMaxHeightTerrain( glm::vec3 _otherWorldPos );
+	glm::dvec3			GetPos(){return m_position.xyz;}
+	double				GetHeightAtPos( glm::dvec3 _pos );
+	bool				AboveTerrain( glm::dvec3 _pos );
+	glm::dmat4			GetInverseWorldMat();
+	double				GetPctMaxHeightTerrain( glm::dvec3 _otherWorldPos );
 
 
 protected:
@@ -159,9 +159,9 @@ protected:
 	int					TriCount();
 	int					VerticesCnt();
 	int					IndicesCount();
-	glm::vec4			GetTexel( TextureData* _texData,  int _x, int _y);
+	glm::dvec4			GetTexel( TextureData* _texData,  int _x, int _y);
 	void				GetTextureData( GLuint _tex, GLenum _texType, TextureData* _texData );
-	glm::vec4			SampleTexture_Linear( glm::vec2 _coords, TextureData* _texData );
+	glm::dvec4			SampleTexture_Linear( glm::dvec2 _coords, TextureData* _texData );
 	void				GetHeightData();
 	void				SmoothVertices();
 	void				CreateNormalsVBO();
@@ -173,7 +173,7 @@ protected:
 	void				RenderTerrain();
 	void				RenderNormals();
 	void				InitNormals();
-	glm::mat3			GetNormalsMatrix();
+	glm::dmat3			GetNormalsMatrix();
 	void				SetupTerrainTextures();
 	void				CleanupTerrainTextures();
 	void				BindTexture( GLuint _tex, GLenum _texType, GLenum _texEnum,
@@ -182,20 +182,20 @@ protected:
 private:
 	
 	TextureData			m_rawTexData;
-	float				m_heightDataScaler;
-	glm::vec4*			m_vertices;
+	double				m_heightDataScaler;
+	glm::dvec4*			m_vertices;
 	GLuint*				m_indices; 
-	float*				m_heightData;
+	double*				m_heightData;
 	glm::vec2*			m_texCoords;
-	glm::vec3*			m_vertNormals;
+	glm::dvec3*			m_vertNormals;
 	glm::uvec2			m_faceResolution;
 	glm::uvec2			m_vertResolution;
-	glm::vec4			m_position;
+	glm::dvec4			m_position;
 	GLuint				m_testTex;
 	GLuint				m_heightmap1;
 	GLuint				m_heightmapTxbo;
-	glm::vec3			m_modelScale;
-	glm::vec2			m_scaler;
+	glm::dvec3			m_modelScale;
+	glm::dvec2			m_scaler;
 	ShaderInfo			m_terrainShader;
 	ShaderInfo			m_normalsShader;
 	bool				m_renderNormals;

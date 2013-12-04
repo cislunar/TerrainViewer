@@ -56,7 +56,7 @@ void Camera::UpdateMoveState( )
 		// State initialize
 		if( state == ORBIT)
 		{
-			glm::vec3 orbitStartPos = m_pos;
+			glm::dvec3 orbitStartPos = m_pos;
 			orbitStartPos.y = m_follow_vertDist;
 			// WE do it twice to reset the previous pos variable
 			SetPos( orbitStartPos );
@@ -66,7 +66,7 @@ void Camera::UpdateMoveState( )
 	}
 }
 
-float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt )
+float Camera::UpdateHeight_SpringForce( glm::dvec3 _newPos, float _dt )
 {
 	//F = -k(|x|-d)(x/|x|) - bv
 	// F = final adjustment force
@@ -76,7 +76,7 @@ float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt )
 	// b is the the strength of the damper (which forces the spring to equilibrium)
 	// v is the relative velocity between the two connected points
 	
-	glm::vec3 anchorPoint	= _newPos;	
+	glm::dvec3 anchorPoint	= _newPos;	
 	anchorPoint.y			= _sim->GetHeightOnTerrain( anchorPoint );
 	float yDiff				=  abs(_newPos.y - anchorPoint.y);
 
@@ -105,13 +105,13 @@ float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt )
 
 void Camera::UpdatePos_Orbit_RoseCurve( float _dt )
 {
-	float tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
-	float n = 3; // n == number of "rose petals" in this pattern
-	float nTickVal = n * tickVal;
-	float r = m_follow_horizDist * cos( nTickVal); // r is radius, distance from center
-	float zRot = sin( tickVal );
-	float xRot = cos( tickVal );
-	glm::vec3 dirToCurPoint = glm::normalize( glm::vec3( xRot, 0.f, zRot) ) * r;
+	double tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
+	double n = 3; // n == number of "rose petals" in this pattern
+	double nTickVal = n * tickVal;
+	double r = m_follow_horizDist * cos( nTickVal); // r is radius, distance from center
+	double zRot = sin( tickVal );
+	double xRot = cos( tickVal );
+	glm::dvec3 dirToCurPoint = glm::normalize( glm::dvec3( xRot, 0.f, zRot) ) * r;
 	dirToCurPoint.y = m_pos.y;
 	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt );
 
@@ -120,10 +120,10 @@ void Camera::UpdatePos_Orbit_RoseCurve( float _dt )
 
 void Camera::Update_Pos_Orbit_Circle( float _dt )
 {
-	float tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
-	float zRot = sin( tickVal );
-	float xRot = cos( tickVal );
-	glm::vec3 dirToCurPoint = glm::normalize( glm::vec3( xRot, 0.f, zRot) ) * m_follow_horizDist;
+	double tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
+	double zRot = sin( tickVal );
+	double xRot = cos( tickVal );
+	glm::dvec3 dirToCurPoint = glm::normalize( glm::dvec3( xRot, 0.f, zRot) ) * m_follow_horizDist;
 	dirToCurPoint.y = m_pos.y;
 	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt );
 	SetPos( dirToCurPoint + m_orbitOffset );
@@ -137,10 +137,10 @@ void Camera::UpdatePos_Orbit( float _dt )
 
 void Camera::UpdatePos_UserInput( float _dt )
 {
-	glm::vec3 moveDir = glm::vec3();
-	glm::vec3 camPlaneForward = glm::cross(glm::vec3(0,1,0), m_right);
+	glm::dvec3 moveDir = glm::dvec3();
+	glm::dvec3 camPlaneForward = glm::cross(glm::dvec3(0,1,0), m_right);
 
-	float speed = m_moveSpeed;
+	double speed = m_moveSpeed;
 	// Speed modifier
 	if( _sim->GetKey(SDLK_LSHIFT) )
 	{
@@ -167,14 +167,14 @@ void Camera::UpdatePos_UserInput( float _dt )
 	// Global Y Axis
 	if( _sim->GetKey(SDLK_q))
 	{
-		moveDir += glm::vec3(0,-1,0) * speed;
+		moveDir += glm::dvec3(0,-1,0) * speed;
 	}
 	if( _sim->GetKey(SDLK_e))
 	{
-		moveDir += glm::vec3(0,1,0) * speed;
+		moveDir += glm::dvec3(0,1,0) * speed;
 	}
 
-	SetPos( m_pos + (moveDir * _dt) );
+	SetPos( m_pos + (moveDir * double(_dt)) );
 }
 
 void Camera::UpdatePos( float _dt )
@@ -192,12 +192,12 @@ void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 {
 	if(m_moveState == USER_INPUT)
 	{
-		glm::vec3 rotOffset = glm::vec3();
+		glm::dvec3 rotOffset = glm::dvec3();
 		rotOffset.x = _mouseDelta.y * m_rotSpeed;
 		rotOffset.y = _mouseDelta.x * m_rotSpeed;
 
-		glm::vec3 finalRot = m_rot + rotOffset;
-		finalRot.x = glm::clamp(finalRot.x, -50.f, 50.f);
+		glm::dvec3 finalRot = m_rot + rotOffset;
+		finalRot.x = glm::clamp(finalRot.x, -50.0, 50.0);
 		finalRot.y = finalRot.y < 0 ? 
 			finalRot.y + 360 : finalRot.y >= 360 ? 
 			finalRot.y - 360 : finalRot.y;
@@ -206,87 +206,87 @@ void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 
 		// Rotate orientation vectors
 		// Rotate forward
-		glm::vec3 newForward	= glm::rotateX( glm::vec3(0,0,-1), -m_rot.x );
+		glm::dvec3 newForward	= glm::rotateX( glm::dvec3(0,0,-1), -m_rot.x );
 		newForward				= glm::normalize(newForward);
 		newForward				= glm::rotateY( newForward, m_rot.y );
 		newForward				= glm::normalize(newForward);
 		m_forward				= newForward;
 
 		// Rotate right
-		glm::vec3 newRight		= glm::rotateY( glm::vec3(1,0,0), -m_rot.y );
+		glm::dvec3 newRight		= glm::rotateY( glm::dvec3(1,0,0), -m_rot.y );
 		newRight				= glm::normalize(newRight);
 		m_right					= newRight;
 	}
 	else
 	{
-		glm::vec3 forwardDir = m_pos - m_prevPos;
-		if( forwardDir != glm::vec3(0,0,0) )
+		glm::dvec3 forwardDir = m_pos - m_prevPos;
+		if( forwardDir != glm::dvec3(0,0,0) )
 		{
 			forwardDir = glm::normalize( forwardDir );
 			// Transform the right dir as if in 2D space
 			// Right dir can never point up or down.
 			m_right = glm::vec3( forwardDir.z, 0, -forwardDir.x );
 			m_forward = forwardDir;
-			glm::vec3 xzPlaneProjection = m_forward - ( glm::dot( m_forward, glm::vec3(0,1,0) ) * glm::vec3(0,1,0) );
+			glm::dvec3 xzPlaneProjection = m_forward - ( glm::dot( m_forward, glm::dvec3(0,1,0) ) * glm::dvec3(0,1,0) );
 			// +90 to get to proper default orientation
-			float yRot = glm::degrees( atan2(xzPlaneProjection.z, xzPlaneProjection.x) ) + 90; 
+			double yRot = glm::degrees( atan2(xzPlaneProjection.z, xzPlaneProjection.x) ) + 90; 
 			// Too jittery
 			//glm::vec3 xyPlaneProj = m_forward - ( glm::dot( m_forward, glm::vec3(0,0,1) ) * glm::vec3(0,0,1) );
 			//float xRot = glm::degrees( atan2(xyPlaneProj.y, xyPlaneProj.x) );
-			float pctMaxHeight = _sim->GetPctMaxHeightTerrain( m_pos );
-			float xRot = 0.f;
-			float threshold =  .7f;
+			double pctMaxHeight = _sim->GetPctMaxHeightTerrain( m_pos );
+			double xRot = 0.f;
+			double threshold =  .7f;
 			if(pctMaxHeight > threshold )
 			{
-				float pctMaxAngle = glm::clamp( (pctMaxHeight - threshold) / .5f, 0.f, 1.0f);
+				double pctMaxAngle = glm::clamp( (pctMaxHeight - threshold) / .5, 0.0, 1.0);
 				xRot += 30 * pctMaxAngle;
 			}
-			glm::vec3 finalRot = glm::vec3( xRot, yRot, 0);
+			glm::dvec3 finalRot = glm::dvec3( xRot, yRot, 0);
 
 			SetRot( finalRot );
 		}
 	}
 }
 
-void Camera::SetPos( glm::vec3 _pos)
+void Camera::SetPos( glm::dvec3 _pos)
 {
 	m_prevPos = m_pos;
 	m_pos = _pos;
 }
-void Camera::SetRot( glm::vec3 _rot)
+void Camera::SetRot( glm::dvec3 _rot)
 {
 	m_rot = _rot;
 }
 
-glm::vec3* Camera::GetPos()
+glm::dvec3* Camera::GetPos()
 {
 	return &m_pos;
 }
 
-glm::vec3* Camera::GetRot()
+glm::dvec3* Camera::GetRot()
 {
 	return &m_rot;
 }
 
-glm::mat4 Camera::GetRotMat()
+glm::dmat4 Camera::GetRotMat()
 {
-	return glm::rotate(glm::mat4(1.0f), m_rot.x, glm::vec3(1,0,0));
+	return glm::rotate(glm::dmat4(1.0), m_rot.x, glm::dvec3(1,0,0));
 }
 
-glm::mat4 Camera::GetViewMat()
+glm::dmat4 Camera::GetViewMat()
 {
 	// Returns an identity matrix that has been pushed backwards
 	// This mat keeps track of the camera position, rotation, and scale
-	glm::mat4 retval = glm::mat4(1.0f);
-	retval = glm::rotate(retval, m_rot.x, glm::vec3(1,0,0));
-	retval = glm::rotate(retval, m_rot.y, glm::vec3(0,1,0));
+	glm::dmat4 retval = glm::dmat4(1.0);
+	retval = glm::rotate(retval, m_rot.x, glm::dvec3(1,0,0));
+	retval = glm::rotate(retval, m_rot.y, glm::dvec3(0,1,0));
 	retval = glm::translate( retval, -m_pos );
 	return retval;
 }
-glm::mat4 Camera::GetProjMat()
+glm::dmat4 Camera::GetProjMat()
 {
 	// This matrix keeps track of the camera's lens
-	glm::mat4 retval = glm::perspective(m_FOV, (float)SCREEN_W / SCREEN_H, m_nearClipPlane, m_farClipPlane );
+	glm::dmat4 retval = glm::perspective(m_FOV, (double)SCREEN_W / SCREEN_H, m_nearClipPlane, m_farClipPlane );
 	return 	retval;
 }
 
