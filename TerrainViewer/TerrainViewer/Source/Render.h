@@ -11,9 +11,9 @@
 #define printOpenGLError() printOglError(__FILE__, __LINE__)
 int printOglError(char *file, int line);
 
-#if 0
-#define SCREEN_W 800
-#define SCREEN_H 600
+#if 1
+#define SCREEN_W 1920
+#define SCREEN_H 1080
 #else
 #define SCREEN_W 1024
 #define SCREEN_H 768
