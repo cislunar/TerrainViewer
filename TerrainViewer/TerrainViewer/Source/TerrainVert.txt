@@ -1,16 +1,16 @@
 #version 400
 
 // Input data
-layout(location=0) in dvec4 in_Position;
-layout(location=1) in dvec3 in_normal;
+layout(location=0) in vec4 in_Position;
+layout(location=1) in vec3 in_normal;
 layout(location=2) in vec2 snowCoords;
 layout(location=3) in vec2 rockCoords;
 layout(location=4) in vec2 grassCoords;
 
-uniform dmat4 ModelMatrix;
-uniform dmat4 ViewMatrix;
-uniform dmat4 ProjectionMatrix;
-uniform dmat3 NormalsMatrix;
+uniform mat4 ModelMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ProjectionMatrix;
+uniform mat3 NormalsMatrix;
 
 struct DirectionalLight
 {
@@ -27,7 +27,7 @@ smooth out vec3 halfDir;
 out vec2 snowUV;
 out vec2 rockUV;
 out vec2 grassUV;
-out double defaultHeight;
+out float defaultHeight;
 
 // Using the blinn-phong model for lighting calculations
 // Major difference between blinn-phong and phong is that we don't calculate a

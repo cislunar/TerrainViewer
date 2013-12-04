@@ -20,21 +20,21 @@ public:
 	{
 		CleanupCamPosFile();
 	}
-	void		SetPos( glm::dvec3 _pos);
-	void		SetRot( glm::dvec3 _rot);
-	glm::dvec3*	GetPos();
-	glm::dvec3*	GetRot();
-	glm::dmat4	GetViewMat();
-	glm::dmat4	GetProjMat();
+	void		SetPos( glm::vec3 _pos);
+	void		SetRot( glm::vec3 _rot);
+	glm::vec3*	GetPos();
+	glm::vec3*	GetRot();
+	glm::mat4	GetViewMat();
+	glm::mat4	GetProjMat();
 	void		Update( float _dt, glm::vec2 _mouseDelta );
-	glm::dvec3	GetRight();
-	glm::dmat4	GetRotMat();
-	double*		GetOrbitSpeed(){return &m_orbitSpeed;}
-	double*		GetSpringStr(){return &m_spring_Str;}
-	double*		GetSpringDampStr(){return &m_spring_DampStr;}
-	double*		GetSpringEquilibriumDist(){return &m_spring_EquilibriumDist;}
-	double*		GetMass(){return & m_mass;}
-	double*		GetGravity(){return &m_gravity;}
+	glm::vec3	GetRight();
+	glm::mat4	GetRotMat();
+	float*		GetOrbitSpeed(){return &m_orbitSpeed;}
+	float*		GetSpringStr(){return &m_spring_Str;}
+	float*		GetSpringDampStr(){return &m_spring_DampStr;}
+	float*		GetSpringEquilibriumDist(){return &m_spring_EquilibriumDist;}
+	float*		GetMass(){return & m_mass;}
+	float*		GetGravity(){return &m_gravity;}
 
 protected:
 private:
@@ -45,33 +45,33 @@ private:
 	void UpdatePos_UserInput( float _dt );
 	void UpdateRot( float _dt, glm::vec2 _mouseDelta  );
 	void UpdateMoveState( );
-	float UpdateHeight_SpringForce( glm::dvec3 _newPos, float _dt );
+	float UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt );
 	void SetupCamPosFile();
 	void CleanupCamPosFile();
 	void SavePosToFile();
 
-	double m_follow_horizDist;
-	double m_follow_vertDist;
-	glm::dvec3 m_orbitOffset;
-	double m_orbitSpeed;
-	glm::dvec3 m_forward;
-	glm::dvec3 m_right;
-	glm::dvec3 m_pos;
-	glm::dvec3 m_prevPos;
-	glm::dvec3 m_rot;
-	double 
+	float m_follow_horizDist;
+	float m_follow_vertDist;
+	glm::vec3 m_orbitOffset;
+	float m_orbitSpeed;
+	glm::vec3 m_forward;
+	glm::vec3 m_right;
+	glm::vec3 m_pos;
+	glm::vec3 m_prevPos;
+	glm::vec3 m_rot;
+	float 
 		m_nearClipPlane,
 		m_farClipPlane,
 		m_FOV;
-	double m_moveSpeed,
+	float m_moveSpeed,
 			m_moveSpeedMulti;
-	double m_rotSpeed;
-	double m_mass;
-	double 
+	float m_rotSpeed;
+	float m_mass;
+	float 
 		m_yAccel,
 		m_yVel,
 		m_gravity;
-	double 
+	float 
 		m_spring_Str,
 		m_spring_DampStr,
 		m_spring_EquilibriumDist,

@@ -17,14 +17,14 @@ public:
 	void SimulateOneFrame(float deltaTime);	// A single logic step
 	void DrawFrame();						// Draw all the sprites
 	void RotationWrap();					// Wrap rotation of sprites
-	glm::dmat4 GetViewMat();
-	glm::dmat4 GetProjMat();
+	glm::mat4 GetViewMat();
+	glm::mat4 GetProjMat();
 	void UpdatePrevKeys( SDLKey _key, bool _State );
 	void UpdateKeys(SDLKey _key, bool _State );
 	bool GetKey( SDLKey _key );
 	bool GetOnKeyDown( SDLKey _key );
-	float GetHeightOnTerrain( glm::dvec3 _other );
-	float GetPctMaxHeightTerrain( glm::dvec3 _otherWorldPos );
+	float GetHeightOnTerrain( glm::vec3 _other );
+	float GetPctMaxHeightTerrain( glm::vec3 _otherWorldPos );
 private:
 	Simulation();							// Force use of singleton
 

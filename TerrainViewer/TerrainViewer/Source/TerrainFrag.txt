@@ -11,9 +11,9 @@ struct DirectionalLight
 out vec4 out_Color;
 
 // In data
-in double defaultHeight;
-smooth in dvec3 vertNormal;
-smooth in dvec3 halfDir;
+in float defaultHeight;
+smooth in vec3 vertNormal;
+smooth in vec3 halfDir;
 in DirectionalLight light;
 in vec2 snowUV;
 in vec2 rockUV;
@@ -34,7 +34,7 @@ uniform sampler2D rock;
 uniform sampler2D grass;
 
 
-vec4 BlinnPhongColor( dvec3 norm, dvec3 halfV, bool _hasSnow, float _snowFactor )
+vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 {
 	vec4 retColor = vec4(0,0,0,0);
 
@@ -75,7 +75,7 @@ vec4 BlinnPhongColor( dvec3 norm, dvec3 halfV, bool _hasSnow, float _snowFactor 
 	return retColor;
 }
 
-vec4 TextureColors(double normY, inout bool _hasSnow, inout float _snowFactor)
+vec4 TextureColors(float normY, inout bool _hasSnow, inout float _snowFactor)
 {
 	// Thresholds
 	float minThreshSnow = .4f;
@@ -115,8 +115,8 @@ void main(void)
 {
 	// Normal and half vector (blinn-phong) need to be normalized after
 	// being passed from vertShader because they are being interpolated
-	dvec3 newNorm = normalize(vertNormal);
-	dvec3 newHalfV = normalize(halfDir);
+	vec3 newNorm = normalize(vertNormal);
+	vec3 newHalfV = normalize(halfDir);
 	
 	// Get texture colors then use BlinnPhong calculation to get realistic lighting
 	out_Color = TextureColors(newNorm.y, hasSnow, snowFactor);

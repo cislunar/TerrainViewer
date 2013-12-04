@@ -8,9 +8,9 @@ in GS_VERTEX_DATA
 	vec3 n;
 } gs_vertData[];
 
-uniform dmat4 ModelMatrix;
-uniform dmat4 ViewMatrix;
-uniform dmat4 ProjectionMatrix;
+uniform mat4 ModelMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ProjectionMatrix;
 
 out vec4 color;
 

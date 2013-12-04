@@ -74,13 +74,13 @@ void Terrain::CreateNormalsVBO()
 	// buffer vertex data to shader
 	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
 	glBufferData(	GL_ARRAY_BUFFER, 
-		sizeof(glm::dvec4) * m_vertResolution.x * m_vertResolution.y, 
+		sizeof(glm::vec4) * m_vertResolution.x * m_vertResolution.y, 
 		m_vertices, 
 		GL_STATIC_DRAW);
 	printOpenGLError();
 
 	// defines the data we just transferred to the gpu
-	glVertexAttribPointer(0, 4, GL_DOUBLE, GL_FALSE, 0, (GLvoid*)0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	printOpenGLError();
 
 	// Enables vertex shader attribute for use
@@ -90,13 +90,13 @@ void Terrain::CreateNormalsVBO()
 	// then buffers the data
 	glBindBuffer(GL_ARRAY_BUFFER, m_normalsShader.VboId);
 	glBufferData(	GL_ARRAY_BUFFER, 
-		sizeof(glm::dvec3) * m_vertResolution.x * m_vertResolution.y, 
+		sizeof(glm::vec3) * m_vertResolution.x * m_vertResolution.y, 
 		m_vertNormals, 
 		GL_STATIC_DRAW);
 	printOpenGLError();
 
 	// defines the data we just transferred to the gpu
-	glVertexAttribPointer(1, 3, GL_DOUBLE, GL_FALSE, 0, (GLvoid*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	printOpenGLError();
 
 	// Determines the draw order of the vertices we transferred to gpu
@@ -126,7 +126,7 @@ void Terrain::CreateTerrainVBO()
 	glGenBuffers(1, &m_terrainShader.VboId);
 	glBindBuffer(GL_ARRAY_BUFFER, m_terrainShader.VboId);
 	glBufferData(	GL_ARRAY_BUFFER, 
-		sizeof(glm::dvec4) * m_vertResolution.x * m_vertResolution.y, 
+		sizeof(glm::vec4) * m_vertResolution.x * m_vertResolution.y, 
 		m_vertices, 
 		GL_STATIC_DRAW);
 	printOpenGLError();
@@ -142,13 +142,13 @@ void Terrain::CreateTerrainVBO()
 	glGenBuffers(1, &m_normalsShader.VboId);
 	glBindBuffer(GL_ARRAY_BUFFER, m_normalsShader.VboId);
 	glBufferData(	GL_ARRAY_BUFFER, 
-					sizeof(glm::dvec3) * m_vertResolution.x * m_vertResolution.y, 
+					sizeof(glm::vec3) * m_vertResolution.x * m_vertResolution.y, 
 					m_vertNormals, 
 					GL_STATIC_DRAW);
 	printOpenGLError();
 
 	// defines the data we just transferred to the gpu
-	glVertexAttribPointer(1, 3, GL_DOUBLE, GL_FALSE, 0, (GLvoid*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	printOpenGLError();
 
 	// Enable texCoord at loc 2
@@ -460,19 +460,19 @@ void Terrain::Render()
 	}
 }
 
-glm::dmat4 Terrain::GetInverseWorldMat()
+glm::mat4 Terrain::GetInverseWorldMat()
 {
 	return glm::inverse( GetModelMat() );
 }
 
-bool Terrain::AboveTerrain( glm::dvec3 _pos )
+bool Terrain::AboveTerrain( glm::vec3 _pos )
 {
 	bool retval = false;
-	glm::dvec3 posInLocalSpace = (GetInverseWorldMat() * glm::dvec4( _pos, 1.0 )).xyz;
-	if( posInLocalSpace.x >= -.5
-		&& posInLocalSpace.x <= .5
-		&& posInLocalSpace.z >= -.5
-		&& posInLocalSpace.z <= .5 )
+	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _pos, 1.0f )).xyz;
+	if( posInLocalSpace.x >= -.5f
+		&& posInLocalSpace.x <= .5f
+		&& posInLocalSpace.z >= -.5f
+		&& posInLocalSpace.z <= .5f )
 	{
 		retval = true;
 	}
@@ -481,11 +481,11 @@ bool Terrain::AboveTerrain( glm::dvec3 _pos )
 }
 
 
-glm::dmat4 Terrain::GetModelMat()
+glm::mat4 Terrain::GetModelMat()
 {
 	// Identity matrix times scale of this object
-	glm::dmat4 retval = glm::dmat4(1.0);
-	glm::dvec3 scaler = (m_scaler.x * glm::dvec3(m_modelScale.x, 0, m_modelScale.z)) + (m_scaler.y * glm::dvec3(0, m_modelScale.y, 0));
+	glm::mat4 retval = glm::mat4(1.0f);
+	glm::vec3 scaler = (m_scaler.x * glm::vec3(m_modelScale.x, 0, m_modelScale.z)) + (m_scaler.y * glm::vec3(0, m_modelScale.y, 0));
 	return 	glm::scale(retval, scaler);
 }
 
@@ -499,20 +499,20 @@ void Terrain::BindNormalsForRender()
 	Simulation *sim = Simulation::GetSimulation();
 
 	// Buffer the matrices
-	glUniformMatrix4dv(m_normalsModelMatLoc, 1, GL_FALSE, &(GetModelMat())[0][0] );
+	glUniformMatrix4fv(m_normalsModelMatLoc, 1, GL_FALSE, &(GetModelMat())[0][0] );
 	// THIS NEEDS TO BE VIEW MATRIX
-	glUniformMatrix4dv(m_normalsViewMatLoc, 1, GL_FALSE, &(sim->GetViewMat())[0][0]);
+	glUniformMatrix4fv(m_normalsViewMatLoc, 1, GL_FALSE, &(sim->GetViewMat())[0][0]);
 	// Then get the perspective matrix
-	glUniformMatrix4dv(m_normalsProjMatLoc, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
+	glUniformMatrix4fv(m_normalsProjMatLoc, 1, GL_FALSE, &(sim->GetProjMat())[0][0]);
 
 	// bind the vertex array
 	glBindVertexArray(m_normalsShader.VaoId);
 }
 
-glm::dmat3 Terrain::GetNormalsMatrix()
+glm::mat3 Terrain::GetNormalsMatrix()
 {
-	glm::dmat3 retval = glm::dmat3();
-	glm::dmat4 viewModel = m_sim->GetViewMat() * GetModelMat();
+	glm::mat3 retval = glm::mat3();
+	glm::mat4 viewModel = m_sim->GetViewMat() * GetModelMat();
 	retval = glm::inverseTranspose(glm::mat3(retval));
 	return retval;
 }
@@ -525,13 +525,13 @@ void Terrain::BindTerrainForRender()
 
 
 	// Buffer the matrices
-	glUniformMatrix4dv(m_terrainModelMatLoc, 1, GL_FALSE, &(GetModelMat())[0][0] );
+	glUniformMatrix4fv(m_terrainModelMatLoc, 1, GL_FALSE, &(GetModelMat())[0][0] );
 	// THIS NEEDS TO BE VIEW MATRIX
-	glUniformMatrix4dv(m_terrainViewMatLoc, 1, GL_FALSE, &(m_sim->GetViewMat())[0][0]);
+	glUniformMatrix4fv(m_terrainViewMatLoc, 1, GL_FALSE, &(m_sim->GetViewMat())[0][0]);
 	// Then get the perspective matrix
-	glUniformMatrix4dv(m_terrainProjMatLoc, 1, GL_FALSE, &(m_sim->GetProjMat())[0][0]);
+	glUniformMatrix4fv(m_terrainProjMatLoc, 1, GL_FALSE, &(m_sim->GetProjMat())[0][0]);
 	// Then buffer the normals matrix m_terrainNormalsMatLoc
-	glUniformMatrix3dv(m_terrainNormalsMatLoc, 1, GL_FALSE, &(GetNormalsMatrix())[0][0]);
+	glUniformMatrix3fv(m_terrainNormalsMatLoc, 1, GL_FALSE, &(GetNormalsMatrix())[0][0]);
 	// Buffer render state
 	glUniform1i(m_terrainRenderStateLoc, (int)m_renderState);
 
@@ -545,14 +545,14 @@ void Terrain::UnbindForRender()
 	glUseProgram(0);
 }
 
-glm::dvec4 Terrain::GetTexel( TextureData* _texData,  int _x, int _y)
+glm::vec4 Terrain::GetTexel( TextureData* _texData,  int _x, int _y)
 {
 	assert( _x < _texData->m_texWidth);
 	assert( _y < _texData->m_texHeight);
 	assert( _texData->m_byteCnt > 0);
 	assert( _texData->m_texData != NULL);
 	int idx = _y * _texData->TexByteWidth();
-	glm::dvec4 retval;
+	glm::vec4 retval;
 
 	switch( _texData->m_format)
 	{
@@ -603,12 +603,12 @@ void Terrain::GetTextureData( GLuint _tex, GLenum _texType, TextureData* _texDat
 	glBindTexture(_texData->m_texType, 0);	
 }
 
-glm::dvec4 VecLerp( glm::dvec4 _from, glm::dvec4 _to, double _pct)
+glm::vec4 VecLerp( glm::vec4 _from, glm::vec4 _to, float _pct)
 {
 	return _from + (_to - _from) * _pct;
 }
 
-glm::dvec4 Terrain::SampleTexture_Linear( glm::dvec2 _coords, TextureData* _texData )
+glm::vec4 Terrain::SampleTexture_Linear( glm::vec2 _coords, TextureData* _texData )
 {
 	float x = (_texData->m_texWidth-1) * _coords.x; // Get X coord in texture
 	int ix = (int) x; // Get X coord as whole number
@@ -617,27 +617,27 @@ glm::dvec4 Terrain::SampleTexture_Linear( glm::dvec2 _coords, TextureData* _texD
 	int iy = (int) y;
 	int iy2 = glm::clamp(iy+1, 0, _texData->m_texHeight-1);
 
-	glm::dvec4 x1 = GetTexel(_texData, ix, iy ); // Get top-left pixel
-	glm::dvec4 x2 = GetTexel(_texData, ix2, iy); // Get top-right pixel
-	glm::dvec4 y1 = GetTexel(_texData, ix, iy2); // Get bottom-left pixel
-	glm::dvec4 y2 = GetTexel(_texData, ix2, iy2); // Get bottom-right pixel
+	glm::vec4 x1 = GetTexel(_texData, ix, iy ); // Get top-left pixel
+	glm::vec4 x2 = GetTexel(_texData, ix2, iy); // Get top-right pixel
+	glm::vec4 y1 = GetTexel(_texData, ix, iy2); // Get bottom-left pixel
+	glm::vec4 y2 = GetTexel(_texData, ix2, iy2); // Get bottom-right pixel
 
-	glm::dvec4 top = VecLerp(x1, x2, glm::fract(x) );
-	glm::dvec4 bot = VecLerp(y1, y2, glm::fract(x) );
+	glm::vec4 top = VecLerp(x1, x2, glm::fract(x) );
+	glm::vec4 bot = VecLerp(y1, y2, glm::fract(x) );
 
 	return VecLerp(top, bot, glm::fract(y) );
 }
 
-double Terrain::GetPctMaxHeightTerrain( glm::dvec3 _otherWorldPos )
+float Terrain::GetPctMaxHeightTerrain( glm::vec3 _otherWorldPos )
 {
-	glm::dvec3 posInLocalSpace = (GetInverseWorldMat() * glm::dvec4( _otherWorldPos, 1.0 )).xyz;
+	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _otherWorldPos, 1.0f )).xyz;
 	return posInLocalSpace.y / m_heightDataScaler;
 }
 
 void Terrain::GetHeightData()
 {
-	glm::dvec4 texSample;
-	glm::dvec2 coords;
+	glm::vec4 texSample;
+	glm::vec2 coords;
 	for(uint32_t y=0; y<m_vertResolution.y; ++y)
 	{
 		// Define coords in range of [0-1]
@@ -652,15 +652,15 @@ void Terrain::GetHeightData()
 	}
 }
 
-double Terrain::GetHeightAtPos( glm::dvec3 _pos )
+float Terrain::GetHeightAtPos( glm::vec3 _pos )
 {
-	double retval = 0.f;
-	glm::dvec3 posInLocalSpace = (GetInverseWorldMat() * glm::dvec4( _pos, 1.0 )).xyz;
+	float retval = 0.f;
+	glm::vec3 posInLocalSpace = (GetInverseWorldMat() * glm::vec4( _pos, 1.0f )).xyz;
 	// Convert range from [-.5,.5] to [0, 1]
-	glm::dvec2 uvCoords = posInLocalSpace.xz + glm::dvec2(.5, .5);
-	glm::dvec4 texSample = SampleTexture_Linear(uvCoords, &m_rawTexData);
+	glm::vec2 uvCoords = posInLocalSpace.xz + glm::vec2(.5f, .5f);
+	glm::vec4 texSample = SampleTexture_Linear(uvCoords, &m_rawTexData);
 	// Values are going to be in range of [0-255], need to make them in range of [0-1]
-	glm::dvec4 localHeight = glm::dvec4(0,(texSample.x / 255.0) * m_heightDataScaler,0,1);
+	glm::vec4 localHeight = glm::vec4(0,(texSample.x / 255.f) * m_heightDataScaler,0,1);
 	localHeight = GetModelMat() * localHeight;
 	retval = localHeight.y;
 
@@ -775,7 +775,7 @@ void Terrain::InitNormals()
 	int idx = -1,
 		v1Idx = -1,
 		v2Idx = -1;
-	glm::dvec3	normal,
+	glm::vec3	normal,
 				eastWest,
 				southNorth,
 				v1,
