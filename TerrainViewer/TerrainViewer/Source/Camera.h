@@ -52,6 +52,7 @@ private:
 
 	float m_follow_horizDist;
 	float m_follow_vertDist;
+	glm::vec3 m_orbitOffset;
 	float m_orbitSpeed;
 	glm::vec3 m_forward;
 	glm::vec3 m_right;

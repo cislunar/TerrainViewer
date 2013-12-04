@@ -6,17 +6,17 @@ static Simulation* _sim = Simulation::GetSimulation();
 
 Camera::Camera()
 {
-	m_gravity					= -2000.f;
-	m_spring_minDist			= 1500.f;
+	m_gravity					= -25000.f;
+	m_spring_minDist			= 25000.f;
 	m_mass						= 75.f;
 	m_spring_Str				= 300.f;
 	m_spring_DampStr			= 100.f;
-	m_spring_EquilibriumDist	= 50000.f;
-	m_follow_horizDist			= 1000000;
-	m_follow_vertDist			= 1000000;
-	m_orbitSpeed				= .07f;
+	m_spring_EquilibriumDist	= 100000.f;
+	m_follow_horizDist			= 4000000;
+	m_follow_vertDist			= 4000000;
+	m_orbitSpeed				= .2f;
 	m_moveState					= USER_INPUT;
-	m_pos						= glm::vec3(0,500000, 0);
+	m_pos						= glm::vec3(0,4000000, 0);
 	m_rot						= glm::vec3();
 	m_nearClipPlane				= 200.0f;
 	m_farClipPlane				= 80000000.f;
@@ -26,6 +26,8 @@ Camera::Camera()
 	m_forward					= glm::vec3(0,0,-1);
 	m_right						= glm::vec3(1,0,0);
 	m_moveSpeedMulti			= 2.f;
+	m_orbitOffset				= glm::vec3( m_follow_horizDist , 0, 0 );
+
 	SetupCamPosFile();
 }
 
@@ -90,6 +92,7 @@ float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt )
 	m_yAccel			+= m_gravity;// Gravity
 	m_yVel				+= m_yAccel * _dt;
 	retval				+= m_yVel * _dt;
+
 	// CLAMP y so we don't go into the ground
 	if(yDiff < m_spring_minDist)
 	{
@@ -123,7 +126,7 @@ void Camera::Update_Pos_Orbit_Circle( float _dt )
 	glm::vec3 dirToCurPoint = glm::normalize( glm::vec3( xRot, 0.f, zRot) ) * m_follow_horizDist;
 	dirToCurPoint.y = m_pos.y;
 	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt );
-	SetPos( dirToCurPoint );
+	SetPos( dirToCurPoint + m_orbitOffset );
 }
 
 void Camera::UpdatePos_Orbit( float _dt )
