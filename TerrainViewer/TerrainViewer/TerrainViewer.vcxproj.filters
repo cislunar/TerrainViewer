@@ -28,6 +28,9 @@
     <ClCompile Include="Source\Camera.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CubeMap.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\filereader.h">
@@ -66,6 +69,9 @@
     <ClInclude Include="Source\TextureData.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\CubeMap.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\CubeFrag.txt">
@@ -93,6 +99,12 @@
       <Filter>Source</Filter>
     </None>
     <None Include="Source\TerrainNormalsFrag.txt">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="Source\CubeMapVert.txt">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="Source\CubeMapFrag.txt">
       <Filter>Source</Filter>
     </None>
   </ItemGroup>

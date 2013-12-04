@@ -283,6 +283,17 @@ glm::mat4 Camera::GetViewMat()
 	retval = glm::translate( retval, -m_pos );
 	return retval;
 }
+
+glm::mat4 Camera::GetViewMat_NoTrans()
+{
+	// Returns an identity matrix that has been pushed backwards
+	// This mat keeps track of the camera rotation
+	glm::mat4 retval = glm::mat4(1.0f);
+	retval = glm::rotate(retval, m_rot.x, glm::vec3(1,0,0));
+	retval = glm::rotate(retval, m_rot.y, glm::vec3(0,1,0));
+	return retval;
+}
+
 glm::mat4 Camera::GetProjMat()
 {
 	// This matrix keeps track of the camera's lens

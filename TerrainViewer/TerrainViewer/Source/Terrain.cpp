@@ -200,11 +200,11 @@ void Terrain::CreateTerrainVBO()
 	printOpenGLError();
 
 	// Get texture location
-	m_terrainHeightmapLoc = glGetUniformLocation(m_terrainShader.ProgramId, "heightMap");
+	/*m_terrainHeightmapLoc = glGetUniformLocation(m_terrainShader.ProgramId, "heightMap");
 	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
 	glProgramUniform1i(m_terrainShader.ProgramId, m_terrainHeightmapLoc , 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_heightmap1);	
+	glBindTexture(GL_TEXTURE_2D, m_heightmap1);	*/
 
 	// Get texture locations
 	m_snowTexLoc		= glGetUniformLocation(m_terrainShader.ProgramId, "snow");
@@ -224,7 +224,7 @@ void Terrain::CreateTerrainVBO()
 void Terrain::BindTexture( GLuint _tex, GLenum _texType, GLenum _texEnum, 
 							int _texNum, GLuint _texLoc, ShaderInfo _shader )
 {
-	// The 0, used below, sets the location of this texture, which ties into GL_TEXTURE0
+	// The _texLoc, used below, sets the location of this texture, which ties into _texEnum
 	glProgramUniform1i(_shader.ProgramId, _texLoc , _texNum);
 	glActiveTexture(_texEnum);
 	glBindTexture(_texType, _tex);	
@@ -380,6 +380,7 @@ void Terrain::DestroyShaders()
 	glDeleteShader(m_terrainShader.VertexShaderId);
 	printOpenGLError();
 
+	glDeleteProgram(m_normalsShader.ProgramId);
 	glDeleteProgram(m_terrainShader.ProgramId);
 	printOpenGLError();
 }
@@ -522,7 +523,6 @@ void Terrain::BindTerrainForRender()
 	// use the shader
 	glUseProgram(m_terrainShader.ProgramId);
 	printOpenGLError();
-
 
 	// Buffer the matrices
 	glUniformMatrix4fv(m_terrainModelMatLoc, 1, GL_FALSE, &(GetModelMat())[0][0] );

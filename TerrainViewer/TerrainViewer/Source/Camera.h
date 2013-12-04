@@ -25,6 +25,7 @@ public:
 	glm::vec3*	GetPos();
 	glm::vec3*	GetRot();
 	glm::mat4	GetViewMat();
+	glm::mat4	GetViewMat_NoTrans();
 	glm::mat4	GetProjMat();
 	void		Update( float _dt, glm::vec2 _mouseDelta );
 	glm::vec3	GetRight();

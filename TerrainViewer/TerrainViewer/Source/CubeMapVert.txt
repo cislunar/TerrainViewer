@@ -1,0 +1,15 @@
+#version 400
+
+// In data
+layout(location=0) in vec4 vp;
+
+// Mat uniforms
+uniform mat4 P, V;
+
+// Out data
+out vec3 texcoords;
+
+void main () {
+  texcoords = vp.xyz;
+  gl_Position = (P * V * vp).xyww;
+}

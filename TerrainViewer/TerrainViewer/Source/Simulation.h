@@ -19,6 +19,7 @@ public:
 	void RotationWrap();					// Wrap rotation of sprites
 	glm::mat4 GetViewMat();
 	glm::mat4 GetProjMat();
+	glm::mat4 GetViewMat_NoTrans();
 	void UpdatePrevKeys( SDLKey _key, bool _State );
 	void UpdateKeys(SDLKey _key, bool _State );
 	bool GetKey( SDLKey _key );
