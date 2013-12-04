@@ -29,7 +29,7 @@ void main(void)
         EmitVertex ();
  
         color = vec4 (0.f);
-		vec4 newPos = gl_in[i].gl_Position + vec4 (gs_vertData[i].n * .001f, 0.f);
+		vec4 newPos = gl_in[i].gl_Position + vec4 (gs_vertData[i].n * .002f, 0.f);
         gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * newPos;
         EmitVertex ();
  
