@@ -13,19 +13,20 @@ Camera::Camera()
 	m_spring_DampStr			= 100.f;
 	m_spring_EquilibriumDist	= 50000.f;
 	m_follow_horizDist			= 1000000;
-	m_follow_vertDist			= 500000;
+	m_follow_vertDist			= 1000000;
 	m_orbitSpeed				= .07f;
 	m_moveState					= USER_INPUT;
 	m_pos						= glm::vec3(0,500000, 0);
 	m_rot						= glm::vec3();
-	m_nearClipPlane				= 5.0f;
-	m_farClipPlane				= 8000000.f;
+	m_nearClipPlane				= 200.0f;
+	m_farClipPlane				= 80000000.f;
 	m_FOV						= 30.f;
-	m_moveSpeed					= 200000.f;
+	m_moveSpeed					= 2000000.f;
 	m_rotSpeed					= 0.5f;
 	m_forward					= glm::vec3(0,0,-1);
 	m_right						= glm::vec3(1,0,0);
 	m_moveSpeedMulti			= 2.f;
+	SetupCamPosFile();
 }
 
 void Camera::Update( float _dt, glm::vec2 _mouseDelta )
@@ -34,6 +35,10 @@ void Camera::Update( float _dt, glm::vec2 _mouseDelta )
 	// Always update rotation before translation
 	UpdateRot( _dt, _mouseDelta );
 	UpdatePos(_dt);
+	if(_sim->GetOnKeyDown(SDLK_b))
+	{
+		SavePosToFile();
+	}
 }
 
 void Camera::UpdateMoveState( )
@@ -95,9 +100,8 @@ float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt )
 	return retval;
 }
 
-void Camera::UpdatePos_Orbit( float _dt )
+void Camera::UpdatePos_Orbit_RoseCurve( float _dt )
 {
-	glm::vec3 rotateCenter = glm::vec3();
 	float tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
 	float n = 3; // n == number of "rose petals" in this pattern
 	float nTickVal = n * tickVal;
@@ -109,7 +113,23 @@ void Camera::UpdatePos_Orbit( float _dt )
 	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt );
 
 	SetPos( dirToCurPoint );
+}
 
+void Camera::Update_Pos_Orbit_Circle( float _dt )
+{
+	float tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
+	float zRot = sin( tickVal );
+	float xRot = cos( tickVal );
+	glm::vec3 dirToCurPoint = glm::normalize( glm::vec3( xRot, 0.f, zRot) ) * m_follow_horizDist;
+	dirToCurPoint.y = m_pos.y;
+	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt );
+	SetPos( dirToCurPoint );
+}
+
+void Camera::UpdatePos_Orbit( float _dt )
+{
+	
+	Update_Pos_Orbit_Circle( _dt );
 }
 
 void Camera::UpdatePos_UserInput( float _dt )
@@ -265,4 +285,37 @@ glm::mat4 Camera::GetProjMat()
 	// This matrix keeps track of the camera's lens
 	glm::mat4 retval = glm::perspective(m_FOV, (float)SCREEN_W / SCREEN_H, m_nearClipPlane, m_farClipPlane );
 	return 	retval;
+}
+
+void Camera::SetupCamPosFile()
+{
+	if(CAMERA_POS_CAPTURE)
+	{
+		// We want to write to the end of the file, no matter what
+		m_camPosFile = fopen(CAM_POS_FILENAME, "a");
+		if(m_camPosFile == NULL)
+		{
+			perror("Error opening file");
+		}
+	}
+}
+
+void Camera::SavePosToFile()
+{
+	if(CAMERA_POS_CAPTURE)
+	{
+		fprintf(m_camPosFile, "%.2f %.2f %.2f\n", m_pos.x, m_pos.y, m_pos.z);
+	}
+}
+
+void Camera::CleanupCamPosFile()
+{
+	if(CAMERA_POS_CAPTURE)
+	{
+		// close file
+		if(fclose(m_camPosFile) != 0)
+		{
+			perror("Error closing file: ");
+		}
+	}
 }

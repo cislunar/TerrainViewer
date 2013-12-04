@@ -200,7 +200,7 @@ private:
 	ShaderInfo			m_normalsShader;
 	bool				m_renderNormals;
 	RenderState			m_renderState;
-	static const int	m_defaultScale = 150;
+	static const int	m_defaultScale = 1000;
 	static const int	m_defaultHorizScaler = 60000;
 	static const int	m_defaultVertScaler = 15000;
 	static const int	m_defaultFaceDim = 512;
