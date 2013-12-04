@@ -1,6 +1,8 @@
 #pragma once
 #include "Math.h"
 
+#define CAMERA_POS_CAPTURE 1
+
 class Camera
 {
 public:

@@ -40,7 +40,7 @@ void Terrain::Update( float _dt )
 void Terrain::Setup()
 {
 	m_sim = Simulation::GetSimulation();
-	m_heightmap1 = LoadImage("Source\\HeightMap2.bmp");
+	m_heightmap1 = LoadImage("Source\\HeightMap4.jpg");
 	GetTextureData(m_heightmap1, GL_TEXTURE_2D, &m_rawTexData);
 	SetupTerrainTextures();
 	GetHeightData();
@@ -794,14 +794,16 @@ void Terrain::InitNormals()
 			{
 				v1Idx = i * m_vertResolution.x + (j-1);
 			}
-			v1 = glm::vec3(m_vertices[v1Idx].xyz());
+			// Scale the vertices before getting the normal
+			// so that the normal is correctly calculated
+			v1 = (GetModelMat() * m_vertices[v1Idx]).xyz;
 
 			// Get west vertex
 			if(j < m_vertResolution.x - 1)
 			{
 				v2Idx = i * m_vertResolution.x + (j+1);
 			}
-			v2 = glm::vec3(m_vertices[v2Idx].xyz());
+			v2 = (GetModelMat() * m_vertices[v2Idx]).xyz;
 
  			eastWest = v1 - v2;
 			eastWest = glm::normalize(eastWest);
@@ -811,14 +813,14 @@ void Terrain::InitNormals()
 			{
 				v1Idx = (i-1)* m_vertResolution.x + j;
 			}
-			v1 = glm::vec3(m_vertices[v1Idx].xyz());
+			v1 = (GetModelMat() * m_vertices[v1Idx]).xyz;
 
 			// Get South vertex
 			if(i < m_vertResolution.y - 1)
 			{
 				v2Idx = (i+1)* m_vertResolution.x + j;
 			}
-			v2 = glm::vec3(m_vertices[v2Idx].xyz());
+			v2 = (GetModelMat() * m_vertices[v2Idx]).xyz;
 			southNorth = v1 - v2;
 			southNorth = glm::normalize(southNorth);
 
