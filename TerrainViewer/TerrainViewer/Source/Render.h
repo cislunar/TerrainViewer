@@ -47,8 +47,8 @@ struct ShaderFiles
 		fragFile = NULL;
 	}
 	char* vertFile;
-	char* geomFile;
 	char* fragFile;
+	char* geomFile;
 };
 
 void	DrawImage( GLuint sourceTexture, Color& color, float xPos, float yPos, float width, float height );

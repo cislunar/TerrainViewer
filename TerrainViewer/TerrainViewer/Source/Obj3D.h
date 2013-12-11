@@ -7,7 +7,7 @@ public:
 	Obj3D() : RenderObjBase()
 	{ 
 		m_position = glm::vec4(0,0,0,1);
-		m_scale = 1000000.0f;
+		m_scale = 100000.0f;
 	}
 	virtual void		Render(void);
 	virtual glm::mat4	GetModelMat();

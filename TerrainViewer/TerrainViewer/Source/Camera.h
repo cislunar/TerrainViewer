@@ -19,7 +19,6 @@ public:
 	Camera();
 	~Camera()
 	{
-		m_box.Cleanup();
 		CleanupCamPosFile();
 	}
 	void		SetPos( glm::vec3 _pos);
@@ -39,6 +38,8 @@ public:
 	float*		GetMass(){return & m_mass;}
 	float*		GetGravity(){return &m_gravity;}
 	void		DebugRender();
+	void		DebugSetup();
+	void		DebugCleanup();
 
 protected:
 private:
@@ -49,13 +50,15 @@ private:
 	void UpdatePos_UserInput( float _dt );
 	void UpdateRot( float _dt, glm::vec2 _mouseDelta  );
 	void UpdateMoveState( );
-	float UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt );
+	float UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt, float* _yVel );
 	void SetupCamPosFile();
 	void CleanupCamPosFile();
 	void SavePosToFile();
 
 	Obj3D				m_box;
 
+	float m_springPhys_vertOffset;
+	float m_springPhys_timeOffset;
 	float m_follow_horizDist;
 	float m_follow_vertDist;
 	glm::vec3 m_orbitOffset;

@@ -6,12 +6,14 @@ static Simulation* _sim = Simulation::GetSimulation();
 
 Camera::Camera()
 {
-	m_gravity					= -25000.f;
-	m_spring_minDist			= 25000.f;
+	m_springPhys_timeOffset		= 1.f;
+	m_gravity					= -100000.f;
+	m_spring_minDist			= 200000.f;
+	m_springPhys_vertOffset		= 10000.f;
 	m_mass						= 75.f;
-	m_spring_Str				= 300.f;
+	m_spring_Str				= 500.f;
 	m_spring_DampStr			= 100.f;
-	m_spring_EquilibriumDist	= 100000.f;
+	m_spring_EquilibriumDist	= 700000.f;
 	m_follow_horizDist			= 4000000;
 	m_follow_vertDist			= 4000000;
 	m_orbitSpeed				= .2f;
@@ -28,7 +30,6 @@ Camera::Camera()
 	m_moveSpeedMulti			= 2.f;
 	m_orbitOffset				= glm::vec3( m_follow_horizDist , 0, 0 );
 
-	m_box.Setup();
 
 	SetupCamPosFile();
 }
@@ -63,12 +64,14 @@ void Camera::UpdateMoveState( )
 			// WE do it twice to reset the previous pos variable
 			SetPos( orbitStartPos );
 			SetPos( orbitStartPos );
+			m_box.SetPos( glm::vec3(0,0,0) ); // TEST
+			m_box.SetPos(  glm::vec3(0,0,0) );// TEST
 		}
 		m_moveState = (CAM_MOVE_STATE)state;
 	}
 }
 
-float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt )
+float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt, float* _yVel )
 {
 	//F = -k(|x|-d)(x/|x|) - bv
 	// F = final adjustment force
@@ -80,11 +83,11 @@ float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt )
 	
 	glm::vec3 anchorPoint	= _newPos;	
 	anchorPoint.y			= _sim->GetHeightOnTerrain( anchorPoint );
-	float yDiff				=  abs(_newPos.y - anchorPoint.y);
+	float yDiff				=  _newPos.y - anchorPoint.y;
 
 	//F = -k(|x|-d)(x/|x|) - bv
 	float springForce	= (-m_spring_Str) 
-							* ( yDiff - m_spring_EquilibriumDist)
+							* ( abs(yDiff) - m_spring_EquilibriumDist)
 							* (1) 
 							- (m_spring_DampStr * m_yVel);
 	// This makes the spring only push up the camera
@@ -92,14 +95,14 @@ float Camera::UpdateHeight_SpringForce( glm::vec3 _newPos, float _dt )
 	float retval 		= _newPos.y;
 	m_yAccel			= springForce / m_mass;
 	m_yAccel			+= m_gravity;// Gravity
-	m_yVel				+= m_yAccel * _dt;
+	*_yVel				+= m_yAccel * _dt;
 	retval				+= m_yVel * _dt;
 
 	// CLAMP y so we don't go into the ground
 	if(yDiff < m_spring_minDist)
 	{
 		retval = anchorPoint.y + m_spring_minDist;
-		m_yVel =  max(m_yVel,0);
+		*_yVel =  max(*_yVel,0);
 	}
 
 	return retval;
@@ -115,24 +118,41 @@ void Camera::UpdatePos_Orbit_RoseCurve( float _dt )
 	float xRot = cos( tickVal );
 	glm::vec3 dirToCurPoint = glm::normalize( glm::vec3( xRot, 0.f, zRot) ) * r;
 	dirToCurPoint.y = m_pos.y;
-	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt );
+	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt, &m_yVel );
 
-	// TEST
-	m_box.SetPos( dirToCurPoint );
-	//SetPos( dirToCurPoint );
-
-	Update_Pos_Orbit_Circle( _dt );
+	SetPos( dirToCurPoint );
 }
 
 void Camera::Update_Pos_Orbit_Circle( float _dt )
 {
-	float tickVal = (SDL_GetTicks() / 1000.f) * m_orbitSpeed;
+	// Here we get the current tick time and then add a time offset to it for physics calculations
+	float tickVal = (SDL_GetTicks() / 1000.f + (m_springPhys_timeOffset * 1000.f) ) * m_orbitSpeed;
 	float zRot = sin( tickVal );
 	float xRot = cos( tickVal );
-	glm::vec3 dirToCurPoint = glm::normalize( glm::vec3( xRot, 0.f, zRot) ) * m_follow_horizDist;
-	dirToCurPoint.y = m_pos.y;
-	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt );
-	SetPos( dirToCurPoint + m_orbitOffset );
+	
+	// Here we calculate two different dirToCurPoints
+	// One uses a future position to calculatea future height
+	// the other uses the current position to calculate current height
+	// whichever is higher is the one we use because we 
+	// DO NOT WANT TO CLIP THE GROUND
+	float yVel1 = m_yVel,
+		yVel2 = m_yVel;
+	glm::vec3 dirToCurPoint1 = glm::normalize( glm::vec3( xRot, 0.f, zRot) ) * m_follow_horizDist;
+	dirToCurPoint1.y = m_pos.y - m_springPhys_vertOffset;
+	dirToCurPoint1.y = UpdateHeight_SpringForce( dirToCurPoint1, _dt, &yVel1 );
+
+	glm::vec3 dirToCurPoint2 = glm::normalize( glm::vec3( xRot, 0.f, zRot) ) * m_follow_horizDist;
+	dirToCurPoint2.y = m_pos.y - m_springPhys_vertOffset;
+	dirToCurPoint2.y = UpdateHeight_SpringForce( dirToCurPoint2, _dt, &yVel2 );
+
+	glm::vec3 finalPoint = dirToCurPoint1.y > dirToCurPoint2.y ? dirToCurPoint1 : dirToCurPoint2;
+	// WE have to update the yvel because UpdateHeight_SpringForce doesn't know
+	// what the outcome of this conditional is, it only provides final yVels
+	// for both positions
+	m_yVel = finalPoint == dirToCurPoint2 ? yVel2 : yVel1; 
+
+	m_box.SetPos( finalPoint ); // ADDED
+	SetPos( finalPoint + m_orbitOffset ); // COMMENTED
 }
 
 void Camera::UpdatePos_Orbit( float _dt )
@@ -196,7 +216,7 @@ void Camera::UpdatePos( float _dt )
 }
 void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 {
-	if(m_moveState == USER_INPUT)
+	if(m_moveState == USER_INPUT )
 	{
 		glm::vec3 rotOffset = glm::vec3();
 		rotOffset.x = _mouseDelta.y * m_rotSpeed;
@@ -343,4 +363,15 @@ void Camera::CleanupCamPosFile()
 			perror("Error closing file: ");
 		}
 	}
+}
+
+void Camera::DebugSetup()
+{	 
+	m_box.Setup();
+}	 
+
+void Camera::DebugCleanup()
+{
+	m_box.Cleanup();
+
 }

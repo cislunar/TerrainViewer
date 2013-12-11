@@ -43,7 +43,7 @@ int init()
 		return 1;
 	}
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-	screen = SDL_SetVideoMode( SCREEN_W, SCREEN_H, 0, SDL_FULLSCREEN | SDL_OPENGL);//SDL_FULLSCREEN );	
+	screen = SDL_SetVideoMode( SCREEN_W, SCREEN_H, 0, SDL_OPENGL | SDL_OPENGL);//SDL_FULLSCREEN
 	if ( !screen ) {
 		printf("Unable to set video mode: %s\n", SDL_GetError());
 		return 1;

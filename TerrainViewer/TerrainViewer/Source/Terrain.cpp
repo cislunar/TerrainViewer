@@ -482,7 +482,6 @@ bool Terrain::AboveTerrain( glm::vec3 _pos )
 	return retval;
 }
 
-
 glm::mat4 Terrain::GetModelMat()
 {
 	// Identity matrix times scale of this object
