@@ -2,6 +2,7 @@
 #include "RenderObjBase.h"
 #include <stdint.h>
 #include "TextureData.h"
+#include "Obj3D.h"
 
 class Terrain : public RenderObjBase
 {
@@ -181,6 +182,8 @@ protected:
 
 private:
 	
+	Obj3D				m_box;
+
 	TextureData			m_rawTexData;
 	float				m_heightDataScaler;
 	glm::vec4*			m_vertices;

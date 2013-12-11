@@ -50,10 +50,13 @@ void Terrain::Setup()
 
 	RenderObjBase::Setup();
 	printOpenGLError();
+
+	m_box.Setup();
 }
 
 void Terrain::Cleanup()
 {
+	m_box.Cleanup();
 	RenderObjBase::Cleanup();
 	glDeleteTextures(1, &m_heightmap1);
 	
@@ -459,6 +462,7 @@ void Terrain::Render()
 	{
 		RenderNormals();
 	}
+	m_box.Render();
 }
 
 glm::mat4 Terrain::GetInverseWorldMat()
