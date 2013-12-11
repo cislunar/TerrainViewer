@@ -28,6 +28,8 @@ Camera::Camera()
 	m_moveSpeedMulti			= 2.f;
 	m_orbitOffset				= glm::vec3( m_follow_horizDist , 0, 0 );
 
+	m_box.Setup();
+
 	SetupCamPosFile();
 }
 
@@ -115,7 +117,11 @@ void Camera::UpdatePos_Orbit_RoseCurve( float _dt )
 	dirToCurPoint.y = m_pos.y;
 	dirToCurPoint.y = UpdateHeight_SpringForce( dirToCurPoint, _dt );
 
-	SetPos( dirToCurPoint );
+	// TEST
+	m_box.SetPos( dirToCurPoint );
+	//SetPos( dirToCurPoint );
+
+	Update_Pos_Orbit_Circle( _dt );
 }
 
 void Camera::Update_Pos_Orbit_Circle( float _dt )
@@ -230,11 +236,10 @@ void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 			glm::vec3 xzPlaneProjection = m_forward - ( glm::dot( m_forward, glm::vec3(0,1,0) ) * glm::vec3(0,1,0) );
 			// +90 to get to proper default orientation
 			float yRot = glm::degrees( atan2(xzPlaneProjection.z, xzPlaneProjection.x) ) + 90; 
-			// Too jittery
-			//glm::vec3 xyPlaneProj = m_forward - ( glm::dot( m_forward, glm::vec3(0,0,1) ) * glm::vec3(0,0,1) );
-			//float xRot = glm::degrees( atan2(xyPlaneProj.y, xyPlaneProj.x) );
 			float pctMaxHeight = _sim->GetPctMaxHeightTerrain( m_pos );
 			float xRot = 0.f;
+			// Here we calculate if the camera should look down
+			// and if so at what degree of rotation
 			float threshold =  .7f;
 			if(pctMaxHeight > threshold )
 			{
@@ -247,6 +252,12 @@ void Camera::UpdateRot( float _dt, glm::vec2 _mouseDelta )
 		}
 	}
 }
+
+void Camera::DebugRender()
+{
+	m_box.Render();
+}
+
 
 void Camera::SetPos( glm::vec3 _pos)
 {

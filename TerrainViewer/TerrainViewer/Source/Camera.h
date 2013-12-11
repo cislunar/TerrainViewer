@@ -2,6 +2,7 @@
 #include "Math.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "Obj3D.h"
 
 #define CAMERA_POS_CAPTURE false
 #define CAM_POS_FILENAME "Cam-Trail-Positions.txt"
@@ -18,6 +19,7 @@ public:
 	Camera();
 	~Camera()
 	{
+		m_box.Cleanup();
 		CleanupCamPosFile();
 	}
 	void		SetPos( glm::vec3 _pos);
@@ -36,6 +38,7 @@ public:
 	float*		GetSpringEquilibriumDist(){return &m_spring_EquilibriumDist;}
 	float*		GetMass(){return & m_mass;}
 	float*		GetGravity(){return &m_gravity;}
+	void		DebugRender();
 
 protected:
 private:
@@ -50,6 +53,8 @@ private:
 	void SetupCamPosFile();
 	void CleanupCamPosFile();
 	void SavePosToFile();
+
+	Obj3D				m_box;
 
 	float m_follow_horizDist;
 	float m_follow_vertDist;
