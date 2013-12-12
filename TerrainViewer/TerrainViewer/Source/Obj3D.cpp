@@ -68,8 +68,8 @@ void Obj3D::CreateShaders()
 	ShaderFiles sFiles;
 	sFiles.fragFile = (char *)malloc(sizeof(char) * (32));
 	sFiles.vertFile = (char *)malloc(sizeof(char) * (32));
-	memcpy(sFiles.vertFile, "Source\\CubeVert.txt", sizeof(char) * (32));
-	memcpy(sFiles.fragFile, "Source\\CubeFrag.txt", sizeof(char) * (32));
+	memcpy(sFiles.vertFile, "Assets\\CubeVert.txt", sizeof(char) * (32));
+	memcpy(sFiles.fragFile, "Assets\\CubeFrag.txt", sizeof(char) * (32));
 	LoadShader(&m_shaderInfo, sFiles);
 
 	ModelMatrixUniformLocation = glGetUniformLocation(m_shaderInfo.ProgramId, "ModelMatrix");
