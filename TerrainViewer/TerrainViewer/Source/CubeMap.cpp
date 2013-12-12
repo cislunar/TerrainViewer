@@ -55,8 +55,8 @@ void CubeMap::CreateSkyBoxShader()
 	ShaderFiles sFiles;
 	sFiles.fragFile = (char *)malloc(sizeof(char) * (32));
 	sFiles.vertFile = (char *)malloc(sizeof(char) * (32));
-	memcpy(sFiles.vertFile, "Source\\CubeMapVert.txt", sizeof(char) * (32));
-	memcpy(sFiles.fragFile, "Source\\CubeMapFrag.txt", sizeof(char) * (32));
+	memcpy(sFiles.vertFile, "Assets\\CubeMapVert.txt", sizeof(char) * (32));
+	memcpy(sFiles.fragFile, "Assets\\CubeMapFrag.txt", sizeof(char) * (32));
 	LoadShader(&m_skyboxShader, sFiles);
 
 	m_cubeMapViewMatLoc = glGetUniformLocation(m_skyboxShader.ProgramId, "V");

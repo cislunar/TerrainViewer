@@ -77,7 +77,7 @@ void Terrain::UpdateRenderState_UserInput()
 void Terrain::Setup()
 {
 	m_sim = Simulation::GetSimulation();
-	m_heightmap1 = LoadImage("Source\\HeightMap4.jpg");
+	m_heightmap1 = LoadImage("Assets\\HeightMap4.jpg");
 	GetTextureData(m_heightmap1, GL_TEXTURE_2D, &m_rawTexData);
 	SetupTerrainTextures();
 	GetHeightData();
@@ -280,8 +280,8 @@ void Terrain::CreateTerrainShader()
 	ShaderFiles sFiles;
 	sFiles.fragFile = (char *)malloc(sizeof(char) * (32));
 	sFiles.vertFile = (char *)malloc(sizeof(char) * (32));
-	memcpy(sFiles.vertFile, "Source\\TerrainVert.txt", sizeof(char) * (32));
-	memcpy(sFiles.fragFile, "Source\\TerrainFrag.txt", sizeof(char) * (32));
+	memcpy(sFiles.vertFile, "Assets\\TerrainVert.txt", sizeof(char) * (32));
+	memcpy(sFiles.fragFile, "Assets\\TerrainFrag.txt", sizeof(char) * (32));
 	LoadShader(&m_terrainShader, sFiles);
 
 	m_terrainModelMatLoc = glGetUniformLocation(m_terrainShader.ProgramId, "ModelMatrix");
@@ -297,9 +297,9 @@ void Terrain::CreateTerrainShader()
 
 void Terrain::SetupTerrainTextures()
 {
-	m_snowTex		= LoadImage("Source\\snowTex.jpg");
-	m_rockFaceTex	= LoadImage("Source\\rockTex.jpg");
-	m_grassTex		= LoadImage("Source\\grassTex1.jpg");
+	m_snowTex		= LoadImage("Assets\\snowTex.jpg");
+	m_rockFaceTex	= LoadImage("Assets\\rockTex.jpg");
+	m_grassTex		= LoadImage("Assets\\grassTex1.jpg");
 
 	glBindTexture( GL_TEXTURE_2D, m_snowTex );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -377,9 +377,9 @@ void Terrain::CreateNormalShader()
 	sFiles.fragFile = (char *)malloc(sizeof(char) * (64));
 	sFiles.geomFile = (char *)malloc(sizeof(char) * (64));
 	sFiles.vertFile = (char *)malloc(sizeof(char) * (64));
-	memcpy(sFiles.vertFile, "Source\\TerrainNormalsVert.txt", sizeof(char) * (64));
-	memcpy(sFiles.geomFile, "Source\\TerrainNormalsGeo.txt", sizeof(char) * (64));
-	memcpy(sFiles.fragFile, "Source\\TerrainNormalsFrag.txt", sizeof(char) * (64));
+	memcpy(sFiles.vertFile, "Assets\\TerrainNormalsVert.txt", sizeof(char) * (64));
+	memcpy(sFiles.geomFile, "Assets\\TerrainNormalsGeo.txt", sizeof(char) * (64));
+	memcpy(sFiles.fragFile, "Assets\\TerrainNormalsFrag.txt", sizeof(char) * (64));
 	LoadShader(&m_normalsShader, sFiles);
 
 	m_normalsModelMatLoc = glGetUniformLocation(m_normalsShader.ProgramId, "ModelMatrix");
