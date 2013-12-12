@@ -3,23 +3,33 @@
 #include <stdint.h>
 #include "TextureData.h"
 
+#define DEMO 1
+
 class Terrain : public RenderObjBase
 {
 public:
 	enum RenderState
 	{
+		WIREFRAME_RENDER_STATE,
+		NORMALS_RENDER_STATE,
+		SPLAT_MAP_RENDER_STATE,
 		AMBIENT_RENDER_STATE,
 		DIFFUSE_RENDER_STATE,
 		SPEC_RENDER_STATE,
 		PHONG_RENDER_STATE,
-		NORMALS_RENDER_STATE,
 		RENDER_STATE_COUNT
 	};
 
 	Terrain() : RenderObjBase()
 	{
+#if DEMO
+		m_renderState		= WIREFRAME_RENDER_STATE;
+#elif
 		m_renderState		= PHONG_RENDER_STATE;
-		m_heightDataScaler		= .7f;
+#endif
+		m_curRStateSecs		= 0.f;
+		m_demoStatesLength	= float(m_demoCycleSecs) / RENDER_STATE_COUNT;
+		m_heightDataScaler	= .7f;
 		m_renderNormals		= false;
 		m_position			= glm::vec4(0,0,0,1);
 		m_modelScale		= glm::vec3(m_defaultScale, m_defaultScale, m_defaultScale);
@@ -153,6 +163,8 @@ protected:
 	virtual void		CreateShaders(void);
 	virtual void		DestroyVBO(void);
 	virtual void		DestroyShaders(void);
+	void				UpdateRenderState_UserInput();
+	void				UpdateRenderState_Demo( float _dt );
 	void				BindTerrainForRender();
 	void				BindNormalsForRender();
 	void				UnbindForRender();
@@ -181,7 +193,7 @@ protected:
 
 private:
 	
-
+	float				m_curRStateSecs;
 	TextureData			m_rawTexData;
 	float				m_heightDataScaler;
 	glm::vec4*			m_vertices;
@@ -201,10 +213,13 @@ private:
 	ShaderInfo			m_normalsShader;
 	bool				m_renderNormals;
 	RenderState			m_renderState;
+	float				m_demoStatesLength;
+
 	static const int	m_defaultScale = 1000;
 	static const int	m_defaultHorizScaler = 60000;
 	static const int	m_defaultVertScaler = 15000;
 	static const int	m_defaultFaceDim = 512;
+	static const int	m_demoCycleSecs = 28;
 
 	glm::vec2	
 		*m_snowTexCoords,

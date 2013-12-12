@@ -19,14 +19,17 @@ in vec2 snowUV;
 in vec2 rockUV;
 in vec2 grassUV;
 
-//enum RenderState{
-//	AMBIENT_RENDER_STATE	= 0,
-//	DIFFUSE_RENDER_STATE	= 1,
-//	SPEC_RENDER_STATE		= 2,
-//	PHONG_RENDER_STATE		= 3,
-//	NORMALS_RENDER_STATE	= 4,
-//	RENDER_STATE_COUNT		= 5
-//};
+//enum RenderState
+//	{
+//		WIREFRAME_RENDER_STATE	= 0,
+//		NORMALS_RENDER_STATE	= 1,
+//		SPLAT_MAP_RENDER_STATE	= 2,
+//		AMBIENT_RENDER_STATE	= 3,
+//		DIFFUSE_RENDER_STATE	= 4,
+//		SPEC_RENDER_STATE		= 5,
+//		PHONG_RENDER_STATE		= 6,
+//		RENDER_STATE_COUNT		= 7
+//	};
 
 uniform int renderState;
 uniform sampler2D snow;
@@ -40,8 +43,8 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 
 	//-----------------------------------------------------------------------------------------
 	// AMBIENT COLOR CALCULATION
-	if( renderState == 3
-		|| renderState == 0 )
+	if( renderState == 6
+		|| renderState == 3 )
 	{
 		vec4 ambientColor = vec4(light.color * light.ambientIntensity, 0.0f);
 		retColor += ambientColor;
@@ -49,8 +52,8 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 
 	//-----------------------------------------------------------------------------------------
 	// DIFFUSE COLOR CALCULATION
-	if( renderState == 3
-		|| renderState == 1 )
+	if( renderState == 6
+		|| renderState == 4 )
 	{
 		vec4 diffuseColor = vec4(0,0,0,0);
 		float diffuseFactor = max(dot(norm, normalize(-light.dir)), 0.0);
@@ -60,8 +63,8 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 
 	//-----------------------------------------------------------------------------------------
 	// SPECULAR COLOR CALCULATION
-	if( renderState == 3
-		|| renderState == 2 )
+	if( renderState == 6
+		|| renderState == 5 )
 	{
 		if(_hasSnow)
 		{
@@ -72,6 +75,37 @@ vec4 BlinnPhongColor( vec3 norm, vec3 halfV, bool _hasSnow, float _snowFactor )
 			retColor += vec4(vec3(.8f,.8f,.8f) * _snowFactor * specColor, 0);
 		}
 	}
+	return retColor;
+}
+
+vec4 SplatMap(float normY)
+{
+	// Thresholds
+	float minThreshSnow = .45f;
+	float threshFullSnow = .55f;
+	float minThreshRock = .87f;
+	float threshFullRock = .85f;
+
+	// Texture colors
+	vec4 rockColor = vec4(1,0,0,1);
+	vec4 snowColor = vec4(0,0,1,1);
+	vec4 grassColor = vec4(0,1,0,1);
+
+	//-----------------------------------------------------------------------------------------
+	// Texture blending
+	// HACK .1f is a hardcoded hack. We should upload the max height in case we change it
+	float heightPct = defaultHeight / .7f;
+	vec4 retColor = vec4(0,0,0,0);
+
+	float rockLerpVal = ( normY - minThreshRock ) / (threshFullRock - minThreshRock);
+	rockLerpVal = max( 0.0f, min( rockLerpVal, 1.f ) );
+	
+	float snowLerpVal = (heightPct - minThreshSnow) / (threshFullSnow - minThreshSnow);
+	snowLerpVal = max( 0.0f, min( snowLerpVal, 1.f ) );
+
+	retColor = mix( grassColor, snowColor, snowLerpVal );
+	retColor = mix( retColor, rockColor, rockLerpVal );
+	retColor.a = 1;
 	return retColor;
 }
 
@@ -118,13 +152,29 @@ void main(void)
 	vec3 newNorm = normalize(vertNormal);
 	vec3 newHalfV = normalize(halfDir);
 	
-	// Get texture colors then use BlinnPhong calculation to get realistic lighting
-	out_Color = TextureColors(newNorm.y, hasSnow, snowFactor);
-    out_Color *= BlinnPhongColor( newNorm, newHalfV, hasSnow, snowFactor );
-	out_Color.a = 1;
-	if(renderState == 4)
+	if( renderState == 0)
+	{
+		// Drawing wireframe white
+		out_Color = vec4(0,0,0,1);
+	}
+	else if(renderState == 1)
 	{
 		//Render normals of each frag via color
 		out_Color = vec4((newNorm + vec3(1,1,1)) * .5, 1);
+	}
+	else
+	{
+		// Get texture colors then use BlinnPhong calculation to get realistic lighting
+		if(renderState != 2)
+		{
+			out_Color = TextureColors(newNorm.y, hasSnow, snowFactor);
+			out_Color *= BlinnPhongColor( newNorm, newHalfV, hasSnow, snowFactor );
+		}
+		else
+		{
+			// Get splat map
+			out_Color = SplatMap( newNorm.y );	
+		}
+		out_Color.a = 1;
 	}
 }

@@ -6,11 +6,40 @@
 Simulation* m_sim = NULL;
 void Terrain::Update( float _dt )
 {
-	if(m_sim->GetOnKeyDown(SDLK_n))
+#if DEMO
+	UpdateRenderState_Demo( _dt );
+#elif
+	UpdateRenderState_UserInput();
+#endif
+}
+
+void Terrain::UpdateRenderState_Demo( float _dt )
+{
+	m_curRStateSecs += _dt;
+	if( m_curRStateSecs >= m_demoStatesLength)
+	{
+		m_renderState = RenderState((int)m_renderState + 1);
+		m_curRStateSecs = 0;
+
+		// Loop 
+		if(m_renderState >= RENDER_STATE_COUNT)
+		{
+			m_renderState = RenderState((int)RENDER_STATE_COUNT - (int)RENDER_STATE_COUNT);
+		}
+	}
+
+	// Determine if we need to turn on normals
+	if( (m_renderState == NORMALS_RENDER_STATE
+		&& m_renderNormals == false)
+		|| (m_renderState != NORMALS_RENDER_STATE
+		&& m_renderNormals == true) )
 	{
 		m_renderNormals = !m_renderNormals;
 	}
+}
 
+void Terrain::UpdateRenderState_UserInput()
+{
 	if(m_sim->GetOnKeyDown( SDLK_LEFTBRACKET ) )
 	{
 		int renderState = (int) m_renderState;
@@ -18,7 +47,7 @@ void Terrain::Update( float _dt )
 
 		if(renderState < 0)
 		{
-			renderState = (int)NORMALS_RENDER_STATE;
+			renderState = (int)RENDER_STATE_COUNT - 1;
 		}
 		m_renderState = (RenderState)renderState;
 	}
@@ -30,12 +59,20 @@ void Terrain::Update( float _dt )
 
 		if(renderState >= RENDER_STATE_COUNT)
 		{
-			renderState = AMBIENT_RENDER_STATE;
+			renderState = RENDER_STATE_COUNT - RENDER_STATE_COUNT;
 		}
 		m_renderState = (RenderState)renderState;
 	}
-}
 
+	if( m_sim->GetOnKeyDown(SDLK_n)
+		|| (m_renderState == NORMALS_RENDER_STATE
+		&& m_renderNormals == false)
+		|| (m_renderState != NORMALS_RENDER_STATE
+		&& m_renderNormals == true) )
+	{
+		m_renderNormals = !m_renderNormals;
+	}
+}
 
 void Terrain::Setup()
 {
@@ -419,6 +456,16 @@ int Terrain::IndicesCount()
 
 void Terrain::RenderTerrain()
 {
+	// Wireframe rendering
+	if( m_renderState == WIREFRAME_RENDER_STATE)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE );
+	}
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL );
+	}
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
