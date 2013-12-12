@@ -22,8 +22,8 @@ Camera::Camera()
 	m_rot						= glm::vec3();
 	m_nearClipPlane				= 200.0f;
 	m_farClipPlane				= 80000000.f;
-	m_FOV						= 30.f;
-	m_moveSpeed					= 2000000.f;
+	m_FOV						= 60.f;
+	m_moveSpeed					= 1000000.f;
 	m_rotSpeed					= 0.5f;
 	m_forward					= glm::vec3(0,0,-1);
 	m_right						= glm::vec3(1,0,0);
@@ -193,11 +193,11 @@ void Camera::UpdatePos_UserInput( float _dt )
 	// Global Y Axis
 	if( _sim->GetKey(SDLK_q))
 	{
-		moveDir += glm::vec3(0,-1,0) * speed;
+		moveDir += glm::vec3(0,-1,0) * (speed/2.f);
 	}
 	if( _sim->GetKey(SDLK_e))
 	{
-		moveDir += glm::vec3(0,1,0) * speed;
+		moveDir += glm::vec3(0,1,0) * (speed/2.f);
 	}
 
 	SetPos( m_pos + (moveDir * _dt) );

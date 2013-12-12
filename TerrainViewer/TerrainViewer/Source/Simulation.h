@@ -22,6 +22,7 @@ public:
 	glm::mat4 GetViewMat_NoTrans();
 	void UpdatePrevKeys( SDLKey _key, bool _State );
 	void UpdateKeys(SDLKey _key, bool _State );
+	void UpdateMouseMotion( SDL_MouseMotionEvent _mme );
 	bool GetKey( SDLKey _key );
 	bool GetOnKeyDown( SDLKey _key );
 	float GetHeightOnTerrain( glm::vec3 _other );
@@ -29,10 +30,11 @@ public:
 private:
 	Simulation();							// Force use of singleton
 
-	static Simulation	singleton;
-	static const int	MAX_SPRITES = 2;
-	GLuint				sprites[MAX_SPRITES];
-	bool				m_KEYS[322]; // Number of SDLK_DOWN events
-	bool				m_prevKEYS[322]; // Number of SDLK_DOWN events
+	static Simulation		singleton;
+	static const int		MAX_SPRITES = 2;
+	GLuint					sprites[MAX_SPRITES];
+	bool					m_KEYS[322]; // Number of SDLK_DOWN events
+	bool					m_prevKEYS[322]; // Number of SDLK_DOWN events
+	SDL_MouseMotionEvent	m_mouseMotion;
 
 };

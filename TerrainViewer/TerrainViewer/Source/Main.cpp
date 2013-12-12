@@ -65,9 +65,15 @@ int main(int argc, char *argv[])
 	bool running = true;
 	bool step = false;
 	bool quit = false;
+	SDL_MouseMotionEvent mme;
 	init();
 	Render *pRender = Render::GetInstance();
 	pRender->init_GL();
+
+	// We grab the input so that we receive mouse movement
+	// even when the mouse is beyond the edge of the screen
+	SDL_ShowCursor(0);
+	SDL_WM_GrabInput( SDL_GRAB_ON );
 
 #if TWEAK_MENU
 	TwInit(TW_OPENGL, NULL);
@@ -95,6 +101,11 @@ int main(int argc, char *argv[])
 			{
 			case SDL_QUIT:
 				quit = true;
+				break;
+
+			case SDL_MOUSEMOTION:
+				mme = event.motion;
+				pSimulation->UpdateMouseMotion( mme );
 				break;
 
 			case SDL_KEYDOWN:
